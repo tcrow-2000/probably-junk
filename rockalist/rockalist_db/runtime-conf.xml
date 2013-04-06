@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <log>
+    <type>file</type>
+    <name>/vagrant/rockalist/rockalist_db/propel.log</name>
+    <ident>propel-rockalist</ident>
+    <level>7</level>
+  </log>
+  
+  <propel>
+    <datasources default="rockalist">
+      <datasource id="rockalist">
+        <adapter>mysql</adapter>
+        <connection>
+          <dsn>mysql:host=localhost;dbname=rockalist</dsn>
+          <user>root</user>
+          <password>rockalist5576</password>
+        </connection>
+      </datasource>
+    </datasources>
+  </propel>
+</config>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="rockalist" defaultIdMethod="native">
+  <table name="track" phpName="Track">
+    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+    <column name="url" type="varchar" size="255" required="true" />
+    <column name="title" type="varchar" size="255" required="true" />
+    <column name="genre" type="varchar" size="255" required="false" />
+    <column name="year" type="integer" required="false" />
+    <column name="date_added" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP" />
+    <column name="artist_id" type="integer" required="true"/>
+    <column name="album_id" type="integer" required="false"/>
+    <foreign-key foreignTable="artist" phpName="Artist" refPhpName="Track">
+      <reference local="artist_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="album" phpName="Album" refPhpName="Track">
+      <reference local="album_id" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="artist" phpName="Artist">
+      <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+      <column name="name" type="varchar" size="255" required="true" />
+  </table>
+  <table name="album" phpName="Album">
+    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+    <column name="name" type="varchar" size="255" required="true" />
+    <column name="year" type="integer" required="false" />
+    <column name="artist_id" type="integer" required="true"/>
+    <foreign-key foreignTable="artist" phpName="Artist" refPhpName="Album">
+      <reference local="artist_id" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="user" phpName="User">
+   <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+   <column name="email" type="varchar" size="255" required="true" primaryKey="true" />
+   <column name="name" type="varchar" size="128" required="false" />
+   <column name="password" type="varchar" size="255" required="true" />
+   <column name="subscribed" type="boolean" required="true" defaultValue="false" />
+   <column name="registered" type="boolean" required="true" defaultValue="false" />
+   <column name="uniqueid" type="varchar" size="255" required="true" />
+   <column name="date_added" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP" />
+   <column name="last_login" type="TIMESTAMP" required="false" />
+  </table>
+  <table name="playlist" phpName="PlayList">
+   <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+   <column name="name" type="varchar" size="128" required="true" />
+   <column name="user_id" type="integer" required="true" />
+   <foreign-key foreignTable="user" phpName="User" refPhpName="Playlist">
+      <reference local="user_id" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="playlisttrack" phpName="PlayListTrack" isCrossRef="true">
+   <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+   <column name="synced" type="boolean" required="true" defaultValue="false" />
+   <column name="playlist_id" type="integer" required="true" />
+   <column name="track_id" type="integer" required="true" />
+   <foreign-key foreignTable="playlist" phpName="PlayList" refPhpName="PlayListTrack">
+      <reference local="playlist_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="track" phpName="Track" refPhpName="PlayListTrack">
+      <reference local="track_id" foreign="id"/>
+    </foreign-key>
+  </table>
+</database>

@@ -1,0 +1,376 @@
+@font-face {
+    font-family: 'tonda';
+    src: url('../fonts/tonda.eot');
+    src: url('../fonts/tonda.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/tonda.woff') format('woff'),
+         url('../fonts/tonda.ttf') format('truetype'),
+         url('../fonts/tonda.svg#tonda') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+html, body {
+    
+}
+.tonda {
+    font-family: tonda;
+    -webkit-text-stroke: 1px white;
+    color: #6495ED;
+}
+#login-tab {
+    display: none;
+}
+#active-user {
+    margin-top: 10px;
+    color: white;
+}
+#active-user > a {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+#user-playlist-active {
+    width: 660px;
+    min-height: 400px;
+    margin-right: 20px;
+    float: left;
+    border-radius: 5px;
+    padding-bottom: 20px;
+}
+#user-playlist-select {
+    width: 250px;
+    min-height: 400px;
+    background-color: white;
+    float: right;
+    border-radius: 5px;
+}
+#playlist-area {
+    width: 640px;
+    min-height: 400px;
+    float: left;
+}
+#playlist-new-track {
+    background-color: purple;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    width: 100%;
+    height: 61px;
+}
+#new-track-inner {
+    margin: 0 auto;
+    height: 100%;
+    padding: 5px 0px;
+    width: 90%;
+}
+#new-track-input {
+    width: 88%;
+    float: left;
+    height: 30px;
+}
+#new-track-input input {
+    width: 100%;
+    margin-bottom: 0px;
+}
+#new-track-add {
+    float: right;
+}
+#new-track-info-container{
+    margin: 0 auto;
+    width: 100%;
+    height: 31px;
+    padding-top: 5px;
+}
+.new-track-link {
+    float: left;
+    width: 115px;
+    text-align: center;
+}
+.new-track-link a {
+    color: lightgrey;
+}
+.info_error {
+    display: none;
+    color: red;
+}
+#playlist-track-list {
+    margin-top: 10px;
+    min-height: 400px;
+}
+#track-list-sort-container {
+    min-height: 400px;
+    width: 100px;
+    float: left;
+}
+#track-list-sort-container .sort-link {
+    color: grey;
+    height: 14px;
+    line-height: 14px;
+    margin: 5px 0;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+}
+#track-list-sort-container div:first-child {
+    font-size: 12px;
+    text-align: left;
+    color: grey;
+}
+#track-list-sort-container .sort-link:hover {
+    font-weight: bold;
+    font-size: 25px;
+}
+#tracks {
+    float: left;
+    min-height: 420px;
+    width: 540px;
+    background-color: #eee9e9;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.track-obj {
+    width: 540px;
+    height: 60px;
+    background-color: #5E5E5E;
+    float: left;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+.sync-status {
+    width: 10px;
+    height: 100%;
+    background-color: yellow;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    float: left;
+}
+.sync-status.synced {
+    background-color: lightgreen;  
+}
+.track-data {
+    width: 440px;
+    height: 100%;
+    float: left;
+    margin-left: 10px;
+    padding-top: 5px;
+}
+.track-title {
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    font-size: 20px;
+    color: white;
+    float: left;
+    overflow: hidden;
+    word-wrap: break-word;
+    font-weight: bold;
+}
+.track-artist {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+    font-style: italic;
+    color: white;
+}
+.track-actions {
+    width: 80px;
+    height: 100%;
+    float:left;
+    background-color: #F2F2F2;
+}
+.track-artist span {
+    font-style: none;
+    font-size: 15px;
+    margin-right: 5px;
+}
+.action {
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+    float: left;
+    border-radius: 2px;
+    text-align: center;
+    vertical-align: middle;
+    color: lightgrey;
+    padding-top: 3px;
+}
+
+#action-edit {
+    background-color: blue;
+}
+#action-info {
+    background-color: lightblue;
+}
+#action-move {
+    background-color: #D6A7BA;
+}
+#action-copy {
+    background-color: limegreen;
+}
+#action-rate {
+    background-color: orange;
+}
+#action-delete {
+    background-color: red;
+}
+#action-edit:hover,
+#action-info:hover,
+#action-move:hover,
+#action-copy:hover,
+#action-rate:hover,
+#action-delete:hover {
+    background-color: #5E5E5E;
+}
+
+#playlist-a-z {
+    width: 20px;
+    background-color: white;
+    min-height: 400px;
+    float: right;
+}
+.a-z-letter {
+    color: grey;
+    height: 15px;
+    line-height: 10px;
+    margin: 3px 0;
+    font-size: 15px;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.a-z-letter:hover {
+    font-weight: bold;
+    font-size: 25px;
+}
+.playlist {
+    height: auto;
+    border-top: 1px solid lightgrey;
+    width: auto;
+    padding: 5px 0;
+    padding-left: 15px;
+    background-color: white;
+    cursor: pointer;
+}
+.playlist.active {
+    margin-left: -40px;
+    background-color: #D6A7BA; 
+    border-radius: 5px;
+}
+.playlist.active + .playlist {
+    border-top: 0px;
+}
+.playlist.active .playlist-inner .playlist-name {
+    color: white;
+    font-size: 20px;
+}
+.playlist-inner {
+    height: 50px;
+    width: 100%;
+}
+.record {
+    height: 50px;
+}
+.record-container {
+    float: left;
+    margin-right: 10px;
+}
+.playlist-name {
+    float: left;
+    line-height: 50px;
+}
+#new-playlist-name {
+    display: none;
+    width: 150px;
+}
+#registration-form {
+    height: 300px;
+    width: 100%;
+    float: left;
+}
+#registration-info {
+    height: 100%;
+    width: 49%;
+    float: left;
+    border-right: 1px solid grey;
+    padding-right: 5px;
+}
+#registration-client {
+    height: 100%;
+    width: 49%;
+    float: right;
+    text-align: center;
+}
+.client-selection > li {
+    display: inline;
+}
+.client-selection > li:first {
+    margin: 0px;
+}
+.client-selection > li:nth-child(2) {
+    margin: 50px;
+}
+.client-selection > li:last {
+    margin: 50px;
+}
+.client-selection {
+    margin-bottom: 35px;
+}
+.validation-alert {
+    display: none;
+}
+#registration-loader {
+    text-align: center;
+    margin-top: 15px;
+} 
+#registration-loader img {
+    vertical-align: middle;
+}
+#page{
+    line-height: normal;
+    height: 100%;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 960px;
+    background-color: appworkspace;
+}
+#header {
+    width: 100%;
+    background-color: white;
+    height: 50px;
+}
+#footer {
+    width: 100%;
+    height: 50px;
+    margin-top: 20px;
+    border-top: 8px solid grey;
+    bottom: 0;
+}
+#logo {
+    font-size: 50px;
+    bottom: 0;
+    width: auto;
+    float: left;
+}
+#nav-bar {
+    height: 37px;
+    border-top: 8px solid grey;
+    width: 100%;
+}
+.nav-tabs > li > a:hover {
+    color: #6495ED;
+}
+.nav-tabs > li > a {
+    color: white;
+}
+.hero-unit.welcome {
+    background-color: #6699aa;
+    color: white;
+}
+.hero-unit .tonda {
+    font-size: 95px;
+}
+.hero-unit.login {
+    background-color: #B7808E;
+    color: white;
+}
