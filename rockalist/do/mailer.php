@@ -7,8 +7,8 @@ function mailRegistration($to, $regCode) {
         'host' => 'ssl://smtp.gmail.com',
         'port' => 465,
         'auth' => true,
-        'username' => 'timothy.crosas@gmail.com',
-        'password' => 'google5576'
+        'username' => 'xxx@gmail.com',
+        'password' => 'xxx'
     ));
     $headers['From']    = '<registration@rockalist.com>';
     $headers['To']      = '<'.$to.'>';

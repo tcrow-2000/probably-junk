@@ -1,6 +1,6 @@
 <?php
 session_start();
-$_SESSION['user'] = 'timothy.crosas@gmail.com';
+$_SESSION['user'] = 'xxx@gmail.com';
 ?>
 <!DOCTYPE HTML>
 <html lang="en-US">
@@ -12,7 +12,7 @@ $_SESSION['user'] = 'timothy.crosas@gmail.com';
     $(document).ready(function() {
        
        function testRegistration() {
-           $.post('do/action.php', {'action':'registerUser','email':'timothy.crosas@gmail.com','pass':'blahblah'},
+           $.post('do/action.php', {'action':'registerUser','email':'xxx@gmail.com','pass':'blahblah'},
                 function(data) {
                     alert(data.success);
                 },
@@ -20,7 +20,7 @@ $_SESSION['user'] = 'timothy.crosas@gmail.com';
            ); 
        }
        function testLogin() {
-           $.post('do/action.php', {'action':'loginUser','email':'timothy.crosas@gmail.com','pass':'google5576'},
+           $.post('do/action.php', {'action':'loginUser','email':'xxx@gmail.com','pass':'xxx'},
                 function(data) {
                     alert(data.success);
                 },
