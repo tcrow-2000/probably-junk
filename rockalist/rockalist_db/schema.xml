@@ -9,11 +9,15 @@
     <column name="date_added" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP" />
     <column name="artist_id" type="integer" required="true"/>
     <column name="album_id" type="integer" required="false"/>
+    <column name="user_id" type="integer" required="true"/>
     <foreign-key foreignTable="artist" phpName="Artist" refPhpName="Track">
       <reference local="artist_id" foreign="id"/>
     </foreign-key>
     <foreign-key foreignTable="album" phpName="Album" refPhpName="Track">
       <reference local="album_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="user" phpName="User" refPhpName="Track">
+      <reference local="user_id" foreign="id"/>
     </foreign-key>
   </table>
   <table name="artist" phpName="Artist">

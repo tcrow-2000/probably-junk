@@ -16,6 +16,61 @@ function getUser() {
     <title>RockA List</title>
 </head>
 <body>
+       <!-- templates -->
+    <script id="tpl-playlist" type="text/x-handlebars-template">
+        <div class="playlist" data-playlist-id="{{id}}">
+            <div class="playlist-inner">
+            <div class="record-container">
+        <img src="public/img/record.png" class="record" />
+        </div>
+            <div class="playlist-name">{{name}}</div>
+            </div>
+        </div>
+    </script>
+    
+    <script id="tpl-track" type="text/x-handlebars-template">
+        <div data-track-id="{{id}}" class="track-obj">
+            <div class="sync-status {{synced}}"></div>
+            <div class="track-data">
+            <div class="track-title">{{title}}
+            </div>
+            <div class="track-artist">
+                <span>by</span>{{artist}}
+            </div>
+            </div>
+            <div class="track-actions">
+                <div class="action" id="action-edit" data-toggle="tooltip" title="Edit this Track">
+                    <i class="icon-pencil icon-white"></i>
+                </div>
+                <div class="action" id="action-info" data-toggle="tooltip" title="Show Track Info">
+                    <i class="icon-info-sign icon-white"></i>
+                </div>
+                <div class="action" id="action-move" data-toggle="tooltip" title="Move this Track">
+                    <i class="icon-hand-right icon-white"></i>
+                </div>
+                <div class="action" id="action-copy" data-toggle="tooltip" title="Copy this Track">
+                    <i class="icon-th icon-white"></i>
+                </div>
+                <div class="action" id="action-rate" data-toggle="tooltip" title="Rate this Track">
+                    <i class="icon-star icon-white"></i>
+                </div>
+                <div class="action" id="action-delete" data-toggle="tooltip" title="Delete this Track">
+                        <i class="icon-remove icon-white"></i>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script id="tpl-track-edit" class="track-edit" type="text/x-handlebars-template">
+        <input type="text" id="edit-url" placeholder="New url for this track"><br/>
+        <input type="text" id="edit-title" placeholder="New title for this track"><br/>
+        <input type="text" id="edit-artist" placeholder="New artist for this track"><br/>
+        <input type="text" id="edit-album" placeholder="New album for this track"><br/>
+        <input type="text" id="edit-genre" placeholder="New genre for this track"><br/>
+        <input type="text" id="edit-year" placeholder="New year for this track"><br>
+        <div id="commit-edit" class="btn btn-info">Done</div>
+    </script>
+    
+    
    <div id="page">
         <div id="header">
             <div id="logo" class="tonda">Rock A List<span class="tonda" style="font-size:20px;">Beta</span></div>
@@ -196,50 +251,5 @@ function getUser() {
         <button id="registration-submit" class="btn btn-primary">Sign me up!</button>
       </div>
     </div>
-    
-    <!-- templates -->
-    <script id="tpl-playlist" type="text/x-handlebars-template">
-        <div class="playlist" data-playlist-id="{{id}}">
-            <div class="playlist-inner">
-            <div class="record-container">
-        <img src="public/img/record.png" class="record" />
-        </div>
-            <div class="playlist-name">{{name}}</div>
-            </div>
-        </div>
-    </script>
-    
-    <script id="tpl-track" type="text/x-handlebars-template">
-        <div data-track-id="{{id}}" class="track-obj">
-            <div class="sync-status {{synced}}"></div>
-            <div class="track-data">
-            <div class="track-title">{{title}}
-            </div>
-            <div class="track-artist">
-                <span>by</span>{{artist}}
-            </div>
-            </div>
-            <div class="track-actions">
-                <div class="action" id="action-edit" data-toggle="tooltip" title="Edit this Track">
-                    <i class="icon-pencil icon-white"></i>
-                </div>
-                <div class="action" id="action-info" data-toggle="tooltip" title="Show Track Info">
-                    <i class="icon-info-sign icon-white"></i>
-                </div>
-                <div class="action" id="action-move" data-toggle="tooltip" title="Move this Track">
-                    <i class="icon-hand-right icon-white"></i>
-                </div>
-                <div class="action" id="action-copy" data-toggle="tooltip" title="Copy this Track">
-                    <i class="icon-th icon-white"></i>
-                </div>
-                <div class="action" id="action-rate" data-toggle="tooltip" title="Rate this Track">
-                    <i class="icon-star icon-white"></i>
-                </div>
-                <div class="action" id="action-delete" data-toggle="tooltip" title="Delete this Track">
-                        <i class="icon-remove icon-white"></i>
-                </div>
-            </div>
-        </div>
-    </script>
 </body>
 </html>

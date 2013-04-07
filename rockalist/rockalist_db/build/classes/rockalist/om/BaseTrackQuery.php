@@ -14,6 +14,7 @@
  * @method TrackQuery orderByDateAdded($order = Criteria::ASC) Order by the date_added column
  * @method TrackQuery orderByArtistId($order = Criteria::ASC) Order by the artist_id column
  * @method TrackQuery orderByAlbumId($order = Criteria::ASC) Order by the album_id column
+ * @method TrackQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
  *
  * @method TrackQuery groupById() Group by the id column
  * @method TrackQuery groupByUrl() Group by the url column
@@ -23,6 +24,7 @@
  * @method TrackQuery groupByDateAdded() Group by the date_added column
  * @method TrackQuery groupByArtistId() Group by the artist_id column
  * @method TrackQuery groupByAlbumId() Group by the album_id column
+ * @method TrackQuery groupByUserId() Group by the user_id column
  *
  * @method TrackQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method TrackQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -35,6 +37,10 @@
  * @method TrackQuery leftJoinAlbum($relationAlias = null) Adds a LEFT JOIN clause to the query using the Album relation
  * @method TrackQuery rightJoinAlbum($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Album relation
  * @method TrackQuery innerJoinAlbum($relationAlias = null) Adds a INNER JOIN clause to the query using the Album relation
+ *
+ * @method TrackQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method TrackQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method TrackQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
  * @method TrackQuery leftJoinPlayListTrack($relationAlias = null) Adds a LEFT JOIN clause to the query using the PlayListTrack relation
  * @method TrackQuery rightJoinPlayListTrack($relationAlias = null) Adds a RIGHT JOIN clause to the query using the PlayListTrack relation
@@ -50,6 +56,7 @@
  * @method Track findOneByDateAdded(string $date_added) Return the first Track filtered by the date_added column
  * @method Track findOneByArtistId(int $artist_id) Return the first Track filtered by the artist_id column
  * @method Track findOneByAlbumId(int $album_id) Return the first Track filtered by the album_id column
+ * @method Track findOneByUserId(int $user_id) Return the first Track filtered by the user_id column
  *
  * @method array findById(int $id) Return Track objects filtered by the id column
  * @method array findByUrl(string $url) Return Track objects filtered by the url column
@@ -59,6 +66,7 @@
  * @method array findByDateAdded(string $date_added) Return Track objects filtered by the date_added column
  * @method array findByArtistId(int $artist_id) Return Track objects filtered by the artist_id column
  * @method array findByAlbumId(int $album_id) Return Track objects filtered by the album_id column
+ * @method array findByUserId(int $user_id) Return Track objects filtered by the user_id column
  *
  * @package    propel.generator.rockalist.om
  */
@@ -162,7 +170,7 @@ abstract class BaseTrackQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `url`, `title`, `genre`, `year`, `date_added`, `artist_id`, `album_id` FROM `track` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `url`, `title`, `genre`, `year`, `date_added`, `artist_id`, `album_id`, `user_id` FROM `track` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -554,6 +562,50 @@ abstract class BaseTrackQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the user_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByUserId(1234); // WHERE user_id = 1234
+     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
+     * $query->filterByUserId(array('min' => 12)); // WHERE user_id >= 12
+     * $query->filterByUserId(array('max' => 12)); // WHERE user_id <= 12
+     * </code>
+     *
+     * @see       filterByUser()
+     *
+     * @param     mixed $userId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return TrackQuery The current query, for fluid interface
+     */
+    public function filterByUserId($userId = null, $comparison = null)
+    {
+        if (is_array($userId)) {
+            $useMinMax = false;
+            if (isset($userId['min'])) {
+                $this->addUsingAlias(TrackPeer::USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($userId['max'])) {
+                $this->addUsingAlias(TrackPeer::USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TrackPeer::USER_ID, $userId, $comparison);
+    }
+
+    /**
      * Filter the query by a related Artist object
      *
      * @param   Artist|PropelObjectCollection $artist The related object(s) to use as filter
@@ -703,6 +755,82 @@ abstract class BaseTrackQuery extends ModelCriteria
         return $this
             ->joinAlbum($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Album', 'AlbumQuery');
+    }
+
+    /**
+     * Filter the query by a related User object
+     *
+     * @param   User|PropelObjectCollection $user The related object(s) to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 TrackQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByUser($user, $comparison = null)
+    {
+        if ($user instanceof User) {
+            return $this
+                ->addUsingAlias(TrackPeer::USER_ID, $user->getId(), $comparison);
+        } elseif ($user instanceof PropelObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(TrackPeer::USER_ID, $user->toKeyValue('Id', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByUser() only accepts arguments of type User or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the User relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return TrackQuery The current query, for fluid interface
+     */
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('User');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'User');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the User relation User object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   UserQuery A secondary query class using the current class as primary query
+     */
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', 'UserQuery');
     }
 
     /**

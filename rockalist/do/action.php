@@ -52,9 +52,10 @@ switch($action) {
         break;
         
     case 'newTrack':
-        $user = thisUser();
+        $user = thisUser();      
         if ($user) {
             $track = new Track();
+            $track->setUser($user);
             $track->setUrl($_POST['url']);
             $track->setTitle($_POST['title']);
             $artist = new Artist();
@@ -69,7 +70,7 @@ switch($action) {
         }
         break;
         
-    case 'getTracks':
+    case 'getTracks_DEPRECIATED':
         $user = thisUser();
         if ($user) {
             $playlist = PlayListQuery::create()->findPK($_POST['playlistId']);
@@ -82,6 +83,30 @@ switch($action) {
         }
         break;
     
+    case 'getTracks':
+        $user = thisUser();
+        if ($user) {
+            $playlist = PlayListQuery::create()->findPK($_POST['playlistId']);
+            $playlistrack = PlayListTrackQuery::create()
+                    ->filterByPlayList($playlist)
+                    ->leftJoinWith('Track')
+                    ->leftJoinWith('Track.User')
+                    ->leftJoinWith('Track.Artist')
+                    ->leftJoinWith('Track.Album')
+                    ->select('Synced')
+                    ->withColumn('User.Id', 'UserId')
+                    ->withColumn('Track.Id','Id')
+                    ->withColumn('Track.Url','Url')
+                    ->withColumn('Track.Title','Title')
+                    ->withColumn('Artist.Name','ArtistName')
+                    ->withColumn('Album.Name','AlbumName')
+                    ->withColumn('Track.Genre', 'Genre')
+                    ->withColumn('Track.Year','Year')
+                    ->find();
+            echo $playlistrack->toJSON();
+        }
+        break;
+        
     case 'deleteTrack':
         $user = thisUser();
         if ($user) {

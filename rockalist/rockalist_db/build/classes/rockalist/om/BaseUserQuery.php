@@ -30,6 +30,10 @@
  * @method UserQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method UserQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method UserQuery leftJoinTrack($relationAlias = null) Adds a LEFT JOIN clause to the query using the Track relation
+ * @method UserQuery rightJoinTrack($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Track relation
+ * @method UserQuery innerJoinTrack($relationAlias = null) Adds a INNER JOIN clause to the query using the Track relation
+ *
  * @method UserQuery leftJoinPlaylist($relationAlias = null) Adds a LEFT JOIN clause to the query using the Playlist relation
  * @method UserQuery rightJoinPlaylist($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Playlist relation
  * @method UserQuery innerJoinPlaylist($relationAlias = null) Adds a INNER JOIN clause to the query using the Playlist relation
@@ -543,6 +547,80 @@ abstract class BaseUserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserPeer::LAST_LOGIN, $lastLogin, $comparison);
+    }
+
+    /**
+     * Filter the query by a related Track object
+     *
+     * @param   Track|PropelObjectCollection $track  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 UserQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByTrack($track, $comparison = null)
+    {
+        if ($track instanceof Track) {
+            return $this
+                ->addUsingAlias(UserPeer::ID, $track->getUserId(), $comparison);
+        } elseif ($track instanceof PropelObjectCollection) {
+            return $this
+                ->useTrackQuery()
+                ->filterByPrimaryKeys($track->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByTrack() only accepts arguments of type Track or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Track relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return UserQuery The current query, for fluid interface
+     */
+    public function joinTrack($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Track');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Track');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Track relation Track object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   TrackQuery A secondary query class using the current class as primary query
+     */
+    public function useTrackQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinTrack($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Track', 'TrackQuery');
     }
 
     /**

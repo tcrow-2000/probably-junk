@@ -87,6 +87,12 @@ abstract class BaseUser extends BaseObject implements Persistent
     protected $last_login;
 
     /**
+     * @var        PropelObjectCollection|Track[] Collection to store aggregation of Track objects.
+     */
+    protected $collTracks;
+    protected $collTracksPartial;
+
+    /**
      * @var        PropelObjectCollection|PlayList[] Collection to store aggregation of PlayList objects.
      */
     protected $collPlaylists;
@@ -111,6 +117,12 @@ abstract class BaseUser extends BaseObject implements Persistent
      * @var        boolean
      */
     protected $alreadyInClearAllReferencesDeep = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $tracksScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -626,6 +638,8 @@ abstract class BaseUser extends BaseObject implements Persistent
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collTracks = null;
+
             $this->collPlaylists = null;
 
         } // if (deep)
@@ -750,6 +764,24 @@ abstract class BaseUser extends BaseObject implements Persistent
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->tracksScheduledForDeletion !== null) {
+                if (!$this->tracksScheduledForDeletion->isEmpty()) {
+                    foreach ($this->tracksScheduledForDeletion as $track) {
+                        // need to save related object because we set the relation to null
+                        $track->save($con);
+                    }
+                    $this->tracksScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collTracks !== null) {
+                foreach ($this->collTracks as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->playlistsScheduledForDeletion !== null) {
@@ -960,6 +992,14 @@ abstract class BaseUser extends BaseObject implements Persistent
             }
 
 
+                if ($this->collTracks !== null) {
+                    foreach ($this->collTracks as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
                 if ($this->collPlaylists !== null) {
                     foreach ($this->collPlaylists as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
@@ -1070,6 +1110,9 @@ abstract class BaseUser extends BaseObject implements Persistent
             $keys[8] => $this->getLastLogin(),
         );
         if ($includeForeignObjects) {
+            if (null !== $this->collTracks) {
+                $result['Tracks'] = $this->collTracks->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collPlaylists) {
                 $result['Playlists'] = $this->collPlaylists->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
@@ -1273,6 +1316,12 @@ abstract class BaseUser extends BaseObject implements Persistent
             // store object hash to prevent cycle
             $this->startCopy = true;
 
+            foreach ($this->getTracks() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTrack($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getPlaylists() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addPlaylist($relObj->copy($deepCopy));
@@ -1340,9 +1389,282 @@ abstract class BaseUser extends BaseObject implements Persistent
      */
     public function initRelation($relationName)
     {
+        if ('Track' == $relationName) {
+            $this->initTracks();
+        }
         if ('Playlist' == $relationName) {
             $this->initPlaylists();
         }
+    }
+
+    /**
+     * Clears out the collTracks collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return User The current object (for fluent API support)
+     * @see        addTracks()
+     */
+    public function clearTracks()
+    {
+        $this->collTracks = null; // important to set this to null since that means it is uninitialized
+        $this->collTracksPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collTracks collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialTracks($v = true)
+    {
+        $this->collTracksPartial = $v;
+    }
+
+    /**
+     * Initializes the collTracks collection.
+     *
+     * By default this just sets the collTracks collection to an empty array (like clearcollTracks());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTracks($overrideExisting = true)
+    {
+        if (null !== $this->collTracks && !$overrideExisting) {
+            return;
+        }
+        $this->collTracks = new PropelObjectCollection();
+        $this->collTracks->setModel('Track');
+    }
+
+    /**
+     * Gets an array of Track objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this User is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|Track[] List of Track objects
+     * @throws PropelException
+     */
+    public function getTracks($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collTracksPartial && !$this->isNew();
+        if (null === $this->collTracks || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTracks) {
+                // return empty collection
+                $this->initTracks();
+            } else {
+                $collTracks = TrackQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collTracksPartial && count($collTracks)) {
+                      $this->initTracks(false);
+
+                      foreach ($collTracks as $obj) {
+                        if (false == $this->collTracks->contains($obj)) {
+                          $this->collTracks->append($obj);
+                        }
+                      }
+
+                      $this->collTracksPartial = true;
+                    }
+
+                    $collTracks->getInternalIterator()->rewind();
+
+                    return $collTracks;
+                }
+
+                if ($partial && $this->collTracks) {
+                    foreach ($this->collTracks as $obj) {
+                        if ($obj->isNew()) {
+                            $collTracks[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTracks = $collTracks;
+                $this->collTracksPartial = false;
+            }
+        }
+
+        return $this->collTracks;
+    }
+
+    /**
+     * Sets a collection of Track objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $tracks A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return User The current object (for fluent API support)
+     */
+    public function setTracks(PropelCollection $tracks, PropelPDO $con = null)
+    {
+        $tracksToDelete = $this->getTracks(new Criteria(), $con)->diff($tracks);
+
+
+        $this->tracksScheduledForDeletion = $tracksToDelete;
+
+        foreach ($tracksToDelete as $trackRemoved) {
+            $trackRemoved->setUser(null);
+        }
+
+        $this->collTracks = null;
+        foreach ($tracks as $track) {
+            $this->addTrack($track);
+        }
+
+        $this->collTracks = $tracks;
+        $this->collTracksPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Track objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related Track objects.
+     * @throws PropelException
+     */
+    public function countTracks(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collTracksPartial && !$this->isNew();
+        if (null === $this->collTracks || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTracks) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTracks());
+            }
+            $query = TrackQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collTracks);
+    }
+
+    /**
+     * Method called to associate a Track object to this object
+     * through the Track foreign key attribute.
+     *
+     * @param   Track $l Track
+     * @return User The current object (for fluent API support)
+     */
+    public function addTrack(Track $l)
+    {
+        if ($this->collTracks === null) {
+            $this->initTracks();
+            $this->collTracksPartial = true;
+        }
+        if (!in_array($l, $this->collTracks->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddTrack($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	Track $track The track object to add.
+     */
+    protected function doAddTrack($track)
+    {
+        $this->collTracks[]= $track;
+        $track->setUser($this);
+    }
+
+    /**
+     * @param	Track $track The track object to remove.
+     * @return User The current object (for fluent API support)
+     */
+    public function removeTrack($track)
+    {
+        if ($this->getTracks()->contains($track)) {
+            $this->collTracks->remove($this->collTracks->search($track));
+            if (null === $this->tracksScheduledForDeletion) {
+                $this->tracksScheduledForDeletion = clone $this->collTracks;
+                $this->tracksScheduledForDeletion->clear();
+            }
+            $this->tracksScheduledForDeletion[]= clone $track;
+            $track->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Tracks from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|Track[] List of Track objects
+     */
+    public function getTracksJoinArtist($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = TrackQuery::create(null, $criteria);
+        $query->joinWith('Artist', $join_behavior);
+
+        return $this->getTracks($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Tracks from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|Track[] List of Track objects
+     */
+    public function getTracksJoinAlbum($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = TrackQuery::create(null, $criteria);
+        $query->joinWith('Album', $join_behavior);
+
+        return $this->getTracks($query, $con);
     }
 
     /**
@@ -1602,6 +1924,11 @@ abstract class BaseUser extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->collTracks) {
+                foreach ($this->collTracks as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collPlaylists) {
                 foreach ($this->collPlaylists as $o) {
                     $o->clearAllReferences($deep);
@@ -1611,6 +1938,10 @@ abstract class BaseUser extends BaseObject implements Persistent
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        if ($this->collTracks instanceof PropelCollection) {
+            $this->collTracks->clearIterator();
+        }
+        $this->collTracks = null;
         if ($this->collPlaylists instanceof PropelCollection) {
             $this->collPlaylists->clearIterator();
         }

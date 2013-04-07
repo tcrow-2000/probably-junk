@@ -46,6 +46,7 @@ class TrackTableMap extends TableMap
         $this->addColumn('date_added', 'DateAdded', 'TIMESTAMP', true, null, 'CURRENT_TIMESTAMP');
         $this->addForeignKey('artist_id', 'ArtistId', 'INTEGER', 'artist', 'id', true, null, null);
         $this->addForeignKey('album_id', 'AlbumId', 'INTEGER', 'album', 'id', false, null, null);
+        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
         // validators
     } // initialize()
 
@@ -56,6 +57,7 @@ class TrackTableMap extends TableMap
     {
         $this->addRelation('Artist', 'Artist', RelationMap::MANY_TO_ONE, array('artist_id' => 'id', ), null, null);
         $this->addRelation('Album', 'Album', RelationMap::MANY_TO_ONE, array('album_id' => 'id', ), null, null);
+        $this->addRelation('User', 'User', RelationMap::MANY_TO_ONE, array('user_id' => 'id', ), null, null);
         $this->addRelation('PlayListTrack', 'PlayListTrack', RelationMap::ONE_TO_MANY, array('id' => 'track_id', ), null, null, 'PlayListTracks');
         $this->addRelation('PlayList', 'PlayList', RelationMap::MANY_TO_MANY, array(), null, null, 'PlayLists');
     } // buildRelations()

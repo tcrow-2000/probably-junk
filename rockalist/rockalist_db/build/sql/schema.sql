@@ -19,9 +19,11 @@ CREATE TABLE `track`
     `date_added` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `artist_id` INTEGER NOT NULL,
     `album_id` INTEGER,
+    `user_id` INTEGER NOT NULL,
     PRIMARY KEY (`id`),
     INDEX `track_FI_1` (`artist_id`),
-    INDEX `track_FI_2` (`album_id`)
+    INDEX `track_FI_2` (`album_id`),
+    INDEX `track_FI_3` (`user_id`)
 ) ENGINE=MyISAM;
 
 -- ---------------------------------------------------------------------

@@ -79,6 +79,12 @@ abstract class BaseTrack extends BaseObject implements Persistent
     protected $album_id;
 
     /**
+     * The value for the user_id field.
+     * @var        int
+     */
+    protected $user_id;
+
+    /**
      * @var        Artist
      */
     protected $aArtist;
@@ -87,6 +93,11 @@ abstract class BaseTrack extends BaseObject implements Persistent
      * @var        Album
      */
     protected $aAlbum;
+
+    /**
+     * @var        User
+     */
+    protected $aUser;
 
     /**
      * @var        PropelObjectCollection|PlayListTrack[] Collection to store aggregation of PlayListTrack objects.
@@ -269,6 +280,17 @@ abstract class BaseTrack extends BaseObject implements Persistent
     }
 
     /**
+     * Get the [user_id] column value.
+     *
+     * @return int
+     */
+    public function getUserId()
+    {
+
+        return $this->user_id;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -447,6 +469,31 @@ abstract class BaseTrack extends BaseObject implements Persistent
     } // setAlbumId()
 
     /**
+     * Set the value of [user_id] column.
+     *
+     * @param int $v new value
+     * @return Track The current object (for fluent API support)
+     */
+    public function setUserId($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[] = TrackPeer::USER_ID;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
+        }
+
+
+        return $this;
+    } // setUserId()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -486,6 +533,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
             $this->date_added = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
             $this->artist_id = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
             $this->album_id = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
+            $this->user_id = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -495,7 +543,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 8; // 8 = TrackPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = TrackPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating Track object", $e);
@@ -523,6 +571,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
         }
         if ($this->aAlbum !== null && $this->album_id !== $this->aAlbum->getId()) {
             $this->aAlbum = null;
+        }
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -565,6 +616,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
 
             $this->aArtist = null;
             $this->aAlbum = null;
+            $this->aUser = null;
             $this->collPlayListTracks = null;
 
             $this->collPlayLists = null;
@@ -700,6 +752,13 @@ abstract class BaseTrack extends BaseObject implements Persistent
                 $this->setAlbum($this->aAlbum);
             }
 
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -805,6 +864,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
         if ($this->isColumnModified(TrackPeer::ALBUM_ID)) {
             $modifiedColumns[':p' . $index++]  = '`album_id`';
         }
+        if ($this->isColumnModified(TrackPeer::USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = '`user_id`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `track` (%s) VALUES (%s)',
@@ -839,6 +901,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
                         break;
                     case '`album_id`':
                         $stmt->bindValue($identifier, $this->album_id, PDO::PARAM_INT);
+                        break;
+                    case '`user_id`':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -951,6 +1016,12 @@ abstract class BaseTrack extends BaseObject implements Persistent
                 }
             }
 
+            if ($this->aUser !== null) {
+                if (!$this->aUser->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aUser->getValidationFailures());
+                }
+            }
+
 
             if (($retval = TrackPeer::doValidate($this, $columns)) !== true) {
                 $failureMap = array_merge($failureMap, $retval);
@@ -1024,6 +1095,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
             case 7:
                 return $this->getAlbumId();
                 break;
+            case 8:
+                return $this->getUserId();
+                break;
             default:
                 return null;
                 break;
@@ -1061,6 +1135,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
             $keys[5] => $this->getDateAdded(),
             $keys[6] => $this->getArtistId(),
             $keys[7] => $this->getAlbumId(),
+            $keys[8] => $this->getUserId(),
         );
         if ($includeForeignObjects) {
             if (null !== $this->aArtist) {
@@ -1068,6 +1143,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
             }
             if (null !== $this->aAlbum) {
                 $result['Album'] = $this->aAlbum->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aUser) {
+                $result['User'] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->collPlayListTracks) {
                 $result['PlayListTracks'] = $this->collPlayListTracks->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1130,6 +1208,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
             case 7:
                 $this->setAlbumId($value);
                 break;
+            case 8:
+                $this->setUserId($value);
+                break;
         } // switch()
     }
 
@@ -1162,6 +1243,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
         if (array_key_exists($keys[5], $arr)) $this->setDateAdded($arr[$keys[5]]);
         if (array_key_exists($keys[6], $arr)) $this->setArtistId($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setAlbumId($arr[$keys[7]]);
+        if (array_key_exists($keys[8], $arr)) $this->setUserId($arr[$keys[8]]);
     }
 
     /**
@@ -1181,6 +1263,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
         if ($this->isColumnModified(TrackPeer::DATE_ADDED)) $criteria->add(TrackPeer::DATE_ADDED, $this->date_added);
         if ($this->isColumnModified(TrackPeer::ARTIST_ID)) $criteria->add(TrackPeer::ARTIST_ID, $this->artist_id);
         if ($this->isColumnModified(TrackPeer::ALBUM_ID)) $criteria->add(TrackPeer::ALBUM_ID, $this->album_id);
+        if ($this->isColumnModified(TrackPeer::USER_ID)) $criteria->add(TrackPeer::USER_ID, $this->user_id);
 
         return $criteria;
     }
@@ -1251,6 +1334,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
         $copyObj->setDateAdded($this->getDateAdded());
         $copyObj->setArtistId($this->getArtistId());
         $copyObj->setAlbumId($this->getAlbumId());
+        $copyObj->setUserId($this->getUserId());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1417,6 +1501,60 @@ abstract class BaseTrack extends BaseObject implements Persistent
         }
 
         return $this->aAlbum;
+    }
+
+    /**
+     * Declares an association between this object and a User object.
+     *
+     * @param   User $v
+     * @return Track The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setUser(User $v = null)
+    {
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
+        }
+
+        $this->aUser = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the User object, it will not be re-added.
+        if ($v !== null) {
+            $v->addTrack($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated User object
+     *
+     * @param PropelPDO $con Optional Connection object.
+     * @param $doQuery Executes a query to get the object if required
+     * @return User The associated User object.
+     * @throws PropelException
+     */
+    public function getUser(PropelPDO $con = null, $doQuery = true)
+    {
+        if ($this->aUser === null && ($this->user_id !== null) && $doQuery) {
+            $this->aUser = UserQuery::create()
+                ->filterByTrack($this) // here
+                ->findOne($con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addTracks($this);
+             */
+        }
+
+        return $this->aUser;
     }
 
 
@@ -1870,6 +2008,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
         $this->date_added = null;
         $this->artist_id = null;
         $this->album_id = null;
+        $this->user_id = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -1909,6 +2048,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
             if ($this->aAlbum instanceof Persistent) {
               $this->aAlbum->clearAllReferences($deep);
             }
+            if ($this->aUser instanceof Persistent) {
+              $this->aUser->clearAllReferences($deep);
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
@@ -1923,6 +2065,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
         $this->collPlayLists = null;
         $this->aArtist = null;
         $this->aAlbum = null;
+        $this->aUser = null;
     }
 
     /**

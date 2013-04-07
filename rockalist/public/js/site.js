@@ -79,12 +79,12 @@ var Playlist = function(playlistData) {
     };
     this.addTrack = function(trackData) {
         var t = new Track(trackData, this.cacheId);
-        var trackId = t.data.Track.Id;
+        var trackId = t.data.Id;
         this.tracks[trackId] = t;
-        this.titleSort.push({name: t.data.Track.Title, id: trackId});
-        this.artistSort.push({name: t.data.Track.Artist.Name, id: trackId});
-        if (t.data.Track.Album) {
-            this.albumSort.push({name: t.data.Track.Album.Name, id: trackId});
+        this.titleSort.push({name: t.data.Title, id: trackId});
+        this.artistSort.push({name: t.data.ArtistName, id: trackId});
+        if (t.data.AlbumName) {
+            this.albumSort.push({name: t.data.AlbumName, id: trackId});
         } else {
             this.albumSort.push({name: 'Unknown', id: trackId});
         }
@@ -157,22 +157,26 @@ var Playlist = function(playlistData) {
         $('#' + this.cacheId).addClass('cached').appendTo($('#cache'));
     };
 };
+Playlist.getTrack = function(trackId) {
+    return UserPlaylists[currentPlaylistId].tracks[trackId];
+};
 var Track = function(trackData, cacheId) {
     this.template = Handlebars.compile($('#tpl-track').html());
     this.cacheId = cacheId;
     this.data = trackData;
     this.render = function() {
         var context = {
-                'id':this.data.Track.Id,
+                'id':this.data.Id,
                 'synced':this.data.Synced,
-                'title':this.data.Track.Title,
-                'artist':this.data.Track.Artist.Name};
+                'title':this.data.Title,
+                'artist':this.data.ArtistName};
         //$('#temp-sort').append(this.template(context));
-        var bucket = $('#' + this.cacheId + ' .sort-bucket[data-sort-id="' + this.data.Track.Title.charAt(0).toUpperCase() + '"]');
+        var bucket = $('#' + this.cacheId + ' .sort-bucket[data-sort-id="' + this.data.Title.charAt(0).toUpperCase() + '"]');
         bucket.append(this.template(context));
     };
     return this;
 };
+Track.edit_template = Handlebars.compile($('#tpl-track-edit').html());
 
 var PendingTrack = function() {
     this.url = '';
@@ -403,6 +407,9 @@ $(document).ready(function() {
        }
     });
     
+    function killPopovers() {
+        $('.popover').remove();
+    }
     /*
      * Track Actions [DELETE]
      * 
@@ -439,6 +446,7 @@ $(document).ready(function() {
             return;
         };
         var trackId = $(this).parents('.track-obj').data('track-id');
+        killPopovers();
         var options = {'placement':'right', 'html': true, 'trigger': 'manual'};
         if ($(this).attr('id') === 'action-copy') {
             options.content = makePlaylistActionButtons(trackId, 'copy-track');
@@ -470,6 +478,31 @@ $(document).ready(function() {
           $('#playlist-cache-'+pid).remove();
       }  
     };
+    
+    /*
+     * Track Actions [EDIT]
+     * 
+     */
+    $(document).delegate('#action-edit','click', function() {
+        if ($(this).parent().find('.popover').length) {
+            $(this).popover('destroy');
+            return;
+        };
+        killPopovers();
+        var trackId = $(this).parents('.track-obj').data('track-id');
+        var track = Playlist.getTrack(trackId);
+        var options = {'placement':'left', 'html': true, 'trigger': 'manual'};
+        options.content = Track.edit_template();
+        $(this)
+        .popover(options)
+        .popover('show');
+        $('#edit-url').val(track.data.Url);
+        $('#edit-title').val(track.data.Title);
+        $('#edit-artist').val(track.data.ArtistName);
+        $('#edit-album').val(track.data.AlbumName);
+        $('#edit-genre').val(track.data.Genre);
+        $('#edit-year').val(track.data.Year);
+    });
     
     /*
      * Check if active user

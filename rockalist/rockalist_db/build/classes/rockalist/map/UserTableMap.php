@@ -55,6 +55,7 @@ class UserTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('Track', 'Track', RelationMap::ONE_TO_MANY, array('id' => 'user_id', ), null, null, 'Tracks');
         $this->addRelation('Playlist', 'PlayList', RelationMap::ONE_TO_MANY, array('id' => 'user_id', ), null, null, 'Playlists');
     } // buildRelations()
 
