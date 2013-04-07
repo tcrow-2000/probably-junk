@@ -107,7 +107,7 @@ function getUser() {
                                     <div >Sort by</div>
                                     <div class="sort-link">Newest</div>
                                     <div class="sort-link">Rated</div>
-                                    <div class="sort-link">Title</div>
+                                    <div class="sort-link selected">Title</div>
                                     <div class="sort-link">Artist</div>
                                     <div class="sort-link">Album</div>
                                     <div class="sort-link">Genre</div>
@@ -116,7 +116,8 @@ function getUser() {
                                 <div id="tracks">
                                     
                                     <!-- script provides tracks -->
-                                    
+                                    <div id="temp-sort"></div>
+                                    <div id="cache"></div>
                                 </div>
                             </div>
                         </div>

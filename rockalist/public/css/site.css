@@ -117,7 +117,15 @@ html, body {
 }
 #track-list-sort-container .sort-link:hover {
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
+}
+#track-list-sort-container .sort-link.selected {
+    font-weight: bold;
+    font-size: 20px;
+    color: #6495ED;
+}
+#cache {
+    
 }
 #tracks {
     float: left;
@@ -222,7 +230,34 @@ html, body {
 #action-delete:hover {
     background-color: #5E5E5E;
 }
-
+.sort-bucket{
+    margin: 0 0;
+    float: left;
+    height: auto;
+    width: 100%;
+    display: none;
+}
+#temp-sort {
+    display: none;
+    float: left;
+    height: auto;
+    width: 100%;
+}
+.sort-marker {
+    color: grey;
+    border-bottom: 1px solid lightgrey;
+    font-size: 20px;
+    font-weight: bold;
+    width: 98%;
+    margin: 0 auto;
+    margin-bottom: 5px;
+}
+#cache {
+    display: none;
+    float: left;
+    height: auto;
+    width: 100%;
+}
 #playlist-a-z {
     width: 20px;
     background-color: white;

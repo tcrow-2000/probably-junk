@@ -1,37 +1,131 @@
 UserPlaylists = {};
+var a_z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+var a_z0_9 = '0123456789'.split('').concat(a_z);
+var sortMode = 'Title';
 
 function isValidEmailAddress(emailAddress) {
     var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
     return pattern.test(emailAddress);
 };
-
+var currentPlaylistId = null;
 var Playlist = function(playlistData) {
     this.template = Handlebars.compile($('#tpl-playlist').html());
     this.data = playlistData;
     this.tracks = {};
+    this.cacheId = 'playlist-cache-' + this.data.Id;
+    this.titleSort = new Array();
+    this.artistSort = new Array();
+    this.albumSort = new Array();
+    this.sortTracks = function() {
+      switch (sortMode) {
+           case 'Title':
+               this.sortTitles();
+           break
+           case 'Artist':
+               this.sortArtists();
+           break;
+           case 'Album':
+               this.sortAlbums();
+           break;
+      }
+      var cache = $('#' + this.cacheId);
+      cache.find('.sort-bucket').each(function() {
+         if (!$(this).find('.track-obj').length) {
+             $(this).hide();
+         }
+      });
+    };
+    this.sortTitles = function() {
+        this.titleSort.sort(function(a,b) {
+            return a.name.localeCompare(b.name);
+        });
+        var cache = $('#' + this.cacheId);
+        for(t in this.titleSort) {
+            var title = this.titleSort[t].name;
+            var trackId = this.titleSort[t].id;
+            var titleFirstLetter = title.charAt(0).toUpperCase();
+            var bucket = cache.find('.sort-bucket[data-sort-id="' + titleFirstLetter + '"]');
+            cache.find('.track-obj[data-track-id="' + trackId + '"]').appendTo(bucket);
+            bucket.show();
+        }
+    };
+    this.sortArtists = function() {
+        this.artistSort.sort(function(a,b) {
+            return a.name.localeCompare(b.name);
+        });
+        var cache = $('#' + this.cacheId);
+        for(t in this.artistSort) {
+            var artist = this.artistSort[t].name;
+            var trackId = this.artistSort[t].id;
+            var artistFirstLetter = artist.charAt(0).toUpperCase();
+            var bucket = cache.find('.sort-bucket[data-sort-id="' + artistFirstLetter + '"]');
+            cache.find('.track-obj[data-track-id="' + trackId + '"]').appendTo(bucket);
+            bucket.show();
+        }
+    };
+    this.sortAlbums = function() {
+        this.albumSort.sort(function(a,b) {
+            return a.name.localeCompare(b.name);
+        });
+        var cache = $('#' + this.cacheId);
+        for(t in this.albumSort) {
+            var album = this.albumSort[t].name;
+            var trackId = this.albumSort[t].id;
+            var albumFirstLetter = album.charAt(0).toUpperCase();
+            var bucket = cache.find('.sort-bucket[data-sort-id="' + albumFirstLetter + '"]');
+            cache.find('.track-obj[data-track-id="' + trackId + '"]').appendTo(bucket);
+            bucket.show();
+        }
+    };
     this.addTrack = function(trackData) {
-        var t = new Track(trackData);
-        this.tracks[t.data.Track.Id] = t;
+        var t = new Track(trackData, this.cacheId);
+        var trackId = t.data.Track.Id;
+        this.tracks[trackId] = t;
+        this.titleSort.push({name: t.data.Track.Title, id: trackId});
+        this.artistSort.push({name: t.data.Track.Artist.Name, id: trackId});
+        if (t.data.Track.Album) {
+            this.albumSort.push({name: t.data.Track.Album.Name, id: trackId});
+        } else {
+            this.albumSort.push({name: 'Unknown', id: trackId});
+        }
         t.render();
     };
     this.acceptCopy = function(trackId) {
         $.post('do/action.php', {'action':'copyTrack', 'trackId':trackId, 'playlistId': this.data.Id},
                 function(trackData) {
-                    console.log(trackData);
+                    //console.log(trackData);
                 },
                 'json'
            ); 
     };
     this.getTracks = function() { 
         var self = this;
-        $.post('do/action.php', {'action':'getTracks', 'playlistId': this.data.Id},
-                function(playlisttracks) {
-                    for(precId in playlisttracks) {
-                        self.addTrack(playlisttracks[precId]);
-                    }
-                },
-                'json'
+        if ($('#' + this.cacheId).hasClass('cached')) {
+            $('#' + this.cacheId).appendTo('#tracks').removeClass('cached');
+        } else {
+            /*
+            * Create sort buckets
+            * 
+            */
+           var playlist = $('<div/>');
+           playlist.attr('id', this.cacheId);
+           for(v in a_z0_9) {
+               playlist.append(
+                   '<div class="sort-bucket" data-sort-id="'+ a_z0_9[v] + '">' +
+                   '<div class="sort-marker">' + a_z0_9[v] + '</div>'
+                   );
+           }
+           playlist.appendTo($('#tracks'));
+           $.post('do/action.php', {'action':'getTracks', 'playlistId': this.data.Id},
+                    function(playlisttracks) {
+                        for(precId in playlisttracks) {
+                            self.addTrack(playlisttracks[precId]);
+                        }
+                        self.sortTracks();
+                    },
+                    'json'
            ); 
+        }
     };
     this.deleteTrack = function(trackId) {
         //delete from database
@@ -40,7 +134,17 @@ var Playlist = function(playlistData) {
         $.post('do/action.php', {'action':'deleteTrack', 'playlistId': this.data.Id, 'trackId':trackId}, 
             function(trackData) {
                 delete self.tracks[trackId];
-                $("div[data-track-id='" + trackId + "']").remove();
+                var cache = $('#'+ self.cacheId);
+                var track = cache.find(".track-obj[data-track-id='" + trackId + "']");
+                var hideBucket = false;
+                var trackBucket = track.parents('.sort-bucket');
+                if (trackBucket.children('.track-obj').length === 1) {
+                    hideBucket = true;
+                }
+                track.remove();
+                if (hideBucket) {
+                    trackBucket.hide();
+                }
             }, 
         'json');
         
@@ -49,9 +153,13 @@ var Playlist = function(playlistData) {
         var context = {'id': this.data.Id, 'name': this.data.Name};
         $('.playlist.add-playlist').before(this.template(context));
     };
+    this.cache = function() {
+        $('#' + this.cacheId).addClass('cached').appendTo($('#cache'));
+    };
 };
-var Track = function(trackData) {
+var Track = function(trackData, cacheId) {
     this.template = Handlebars.compile($('#tpl-track').html());
+    this.cacheId = cacheId;
     this.data = trackData;
     this.render = function() {
         var context = {
@@ -59,7 +167,9 @@ var Track = function(trackData) {
                 'synced':this.data.Synced,
                 'title':this.data.Track.Title,
                 'artist':this.data.Track.Artist.Name};
-        $('#tracks').append(this.template(context));
+        //$('#temp-sort').append(this.template(context));
+        var bucket = $('#' + this.cacheId + ' .sort-bucket[data-sort-id="' + this.data.Track.Title.charAt(0).toUpperCase() + '"]');
+        bucket.append(this.template(context));
     };
     return this;
 };
@@ -75,6 +185,22 @@ var PendingTrack = function() {
 
 $(document).ready(function() {
     
+    /*
+     * Sorting tracks
+     * 
+     */
+    function performSort(mode) {
+        sortMode = mode;
+        UserPlaylists[currentPlaylistId].sortTracks();
+    }
+    $('.sort-link').click(function() {
+        if ($(this).hasClass('selected')) {
+            return;
+        }
+        $('.sort-link.selected').removeClass('selected');
+        $(this).addClass('selected');
+        performSort($(this).text());
+    });
     /*
      * Playlists
      * 
@@ -97,8 +223,11 @@ $(document).ready(function() {
         $('.playlist.add-playlist .btn').show();
     }
     function getPlaylistTracks() {
-        $('#tracks').empty();
         var pid = $('.playlist.active').data('playlist-id');
+        if (currentPlaylistId) {
+            UserPlaylists[currentPlaylistId].cache();
+        }
+        currentPlaylistId = pid;
         UserPlaylists[pid].getTracks();
     }
     $(document).delegate('.playlist', 'click', function(){
@@ -255,17 +384,17 @@ $(document).ready(function() {
     });
     $('#new-track-add a').keyup(function(e) {
        if (e.keyCode === 13) {
-           var pid = parseInt($('.playlist.active').data('playlist-id'));
            $.post('do/action.php', 
                 {
                     'action':'newTrack', 
-                    'playlistId': pid,
+                    'playlistId': currentPlaylistId,
                     'url':pendingTrack.url,
                     'title':pendingTrack.title,
                     'artist':pendingTrack.artist
                 },
                 function(trackData) {
-                    UserPlaylists[pid].addTrack(trackData);
+                    UserPlaylists[currentPlaylistId].addTrack(trackData);
+                    UserPlaylists[currentPlaylistId].sortTracks();
                     pendingTrack = new PendingTrack();
                     $('#new-track-url').val('');
                 },
@@ -280,8 +409,7 @@ $(document).ready(function() {
      */
     $(document).delegate('#action-delete', 'click', function() {
         var trackId = $(this).parents('.track-obj').data('track-id');
-        var pid = $('.playlist.active').data('playlist-id');
-        UserPlaylists[pid].deleteTrack(trackId);
+        UserPlaylists[currentPlaylistId].deleteTrack(trackId);
     });
     
     /*
@@ -293,7 +421,7 @@ $(document).ready(function() {
         $('.playlist').not('.active').not('.add-playlist').each(function() {
             var del = (function() { 
                         if (actionClass === 'move-track') {
-                        return $('.playlist.active').data('playlist-id');
+                        return currentPlaylistId;
                         }
                     })();
             playlists.append('<div class="btn btn-info ' + actionClass + '" ' +
@@ -301,7 +429,7 @@ $(document).ready(function() {
                     'data-playlist-id="' + $(this).data('playlist-id') + '" ' +
                     'data-playlist-id-del="' + del + '" ' +
                     ' style="margin-bottom:5px;">' + 
-                    $(this).find('.playlist-name').text() + '</div>');
+                    $(this).find('.playlist-name').text() + '</div><br/>');
         });
         return playlists.html();
     }
@@ -325,6 +453,7 @@ $(document).ready(function() {
         var trackId = $(this).data('track-id');
         var pid = $(this).data('playlist-id');
         UserPlaylists[pid].acceptCopy(trackId);
+        dumpCache(pid);
         $(this).remove();
     });
     $(document).delegate('.move-track', 'click', function() {
@@ -332,10 +461,15 @@ $(document).ready(function() {
         var pid = $(this).data('playlist-id');
         var dpid = $(this).data('playlist-id-del');
         UserPlaylists[pid].acceptCopy(trackId);
+        dumpCache(pid);
         UserPlaylists[dpid].deleteTrack(trackId);
         $(this).remove();
     });
-    
+    function dumpCache(pid) {
+      if ($('#playlist-cache-'+pid).length) {
+          $('#playlist-cache-'+pid).remove();
+      }  
+    };
     
     /*
      * Check if active user
@@ -349,11 +483,24 @@ $(document).ready(function() {
      * A-Z
      * 
      */
-    var a_z = '*ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    for (i = 0; i < a_z.length; i++) {
-        $('#playlist-a-z').append("<div class='a-z-letter'>" + a_z[i] + "</div>");
+    $('#playlist-a-z').append("<div class='a-z-letter'>*</div>");
+    for (i = 0; i < a_z0_9.length; i++) {
+        $('#playlist-a-z').append("<div class='a-z-letter'>" + a_z0_9[i] + "</div>");
     }
-    
+    $(document).delegate('.a-z-letter', 'click', function() {
+        if ($(this).text() === '*') {
+            $('#tracks .sort-bucket').each(function() {
+               if ($(this).children().length > 1) {
+                   $(this).show();
+               } else {
+                   $(this).hide();
+               }
+            });
+        } else {
+            $('#tracks .sort-bucket[data-sort-id="' + $(this).text() + '"]').show();
+            $('#tracks .sort-bucket[data-sort-id!="' + $(this).text() + '"]').hide();
+        }
+    });
     /*
      * User Registration
      * 
