@@ -15,6 +15,9 @@
  * @method TrackQuery orderByArtistId($order = Criteria::ASC) Order by the artist_id column
  * @method TrackQuery orderByAlbumId($order = Criteria::ASC) Order by the album_id column
  * @method TrackQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
+ * @method TrackQuery orderByRatingTotal($order = Criteria::ASC) Order by the rating_total column
+ * @method TrackQuery orderByRatingCount($order = Criteria::ASC) Order by the rating_count column
+ * @method TrackQuery orderByRatingAverage($order = Criteria::ASC) Order by the rating_average column
  *
  * @method TrackQuery groupById() Group by the id column
  * @method TrackQuery groupByUrl() Group by the url column
@@ -25,6 +28,9 @@
  * @method TrackQuery groupByArtistId() Group by the artist_id column
  * @method TrackQuery groupByAlbumId() Group by the album_id column
  * @method TrackQuery groupByUserId() Group by the user_id column
+ * @method TrackQuery groupByRatingTotal() Group by the rating_total column
+ * @method TrackQuery groupByRatingCount() Group by the rating_count column
+ * @method TrackQuery groupByRatingAverage() Group by the rating_average column
  *
  * @method TrackQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method TrackQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -57,6 +63,9 @@
  * @method Track findOneByArtistId(int $artist_id) Return the first Track filtered by the artist_id column
  * @method Track findOneByAlbumId(int $album_id) Return the first Track filtered by the album_id column
  * @method Track findOneByUserId(int $user_id) Return the first Track filtered by the user_id column
+ * @method Track findOneByRatingTotal(int $rating_total) Return the first Track filtered by the rating_total column
+ * @method Track findOneByRatingCount(int $rating_count) Return the first Track filtered by the rating_count column
+ * @method Track findOneByRatingAverage(int $rating_average) Return the first Track filtered by the rating_average column
  *
  * @method array findById(int $id) Return Track objects filtered by the id column
  * @method array findByUrl(string $url) Return Track objects filtered by the url column
@@ -67,6 +76,9 @@
  * @method array findByArtistId(int $artist_id) Return Track objects filtered by the artist_id column
  * @method array findByAlbumId(int $album_id) Return Track objects filtered by the album_id column
  * @method array findByUserId(int $user_id) Return Track objects filtered by the user_id column
+ * @method array findByRatingTotal(int $rating_total) Return Track objects filtered by the rating_total column
+ * @method array findByRatingCount(int $rating_count) Return Track objects filtered by the rating_count column
+ * @method array findByRatingAverage(int $rating_average) Return Track objects filtered by the rating_average column
  *
  * @package    propel.generator.rockalist.om
  */
@@ -170,7 +182,7 @@ abstract class BaseTrackQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `url`, `title`, `genre`, `year`, `date_added`, `artist_id`, `album_id`, `user_id` FROM `track` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `url`, `title`, `genre`, `year`, `date_added`, `artist_id`, `album_id`, `user_id`, `rating_total`, `rating_count`, `rating_average` FROM `track` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -603,6 +615,132 @@ abstract class BaseTrackQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(TrackPeer::USER_ID, $userId, $comparison);
+    }
+
+    /**
+     * Filter the query on the rating_total column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRatingTotal(1234); // WHERE rating_total = 1234
+     * $query->filterByRatingTotal(array(12, 34)); // WHERE rating_total IN (12, 34)
+     * $query->filterByRatingTotal(array('min' => 12)); // WHERE rating_total >= 12
+     * $query->filterByRatingTotal(array('max' => 12)); // WHERE rating_total <= 12
+     * </code>
+     *
+     * @param     mixed $ratingTotal The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return TrackQuery The current query, for fluid interface
+     */
+    public function filterByRatingTotal($ratingTotal = null, $comparison = null)
+    {
+        if (is_array($ratingTotal)) {
+            $useMinMax = false;
+            if (isset($ratingTotal['min'])) {
+                $this->addUsingAlias(TrackPeer::RATING_TOTAL, $ratingTotal['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($ratingTotal['max'])) {
+                $this->addUsingAlias(TrackPeer::RATING_TOTAL, $ratingTotal['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TrackPeer::RATING_TOTAL, $ratingTotal, $comparison);
+    }
+
+    /**
+     * Filter the query on the rating_count column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRatingCount(1234); // WHERE rating_count = 1234
+     * $query->filterByRatingCount(array(12, 34)); // WHERE rating_count IN (12, 34)
+     * $query->filterByRatingCount(array('min' => 12)); // WHERE rating_count >= 12
+     * $query->filterByRatingCount(array('max' => 12)); // WHERE rating_count <= 12
+     * </code>
+     *
+     * @param     mixed $ratingCount The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return TrackQuery The current query, for fluid interface
+     */
+    public function filterByRatingCount($ratingCount = null, $comparison = null)
+    {
+        if (is_array($ratingCount)) {
+            $useMinMax = false;
+            if (isset($ratingCount['min'])) {
+                $this->addUsingAlias(TrackPeer::RATING_COUNT, $ratingCount['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($ratingCount['max'])) {
+                $this->addUsingAlias(TrackPeer::RATING_COUNT, $ratingCount['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TrackPeer::RATING_COUNT, $ratingCount, $comparison);
+    }
+
+    /**
+     * Filter the query on the rating_average column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRatingAverage(1234); // WHERE rating_average = 1234
+     * $query->filterByRatingAverage(array(12, 34)); // WHERE rating_average IN (12, 34)
+     * $query->filterByRatingAverage(array('min' => 12)); // WHERE rating_average >= 12
+     * $query->filterByRatingAverage(array('max' => 12)); // WHERE rating_average <= 12
+     * </code>
+     *
+     * @param     mixed $ratingAverage The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return TrackQuery The current query, for fluid interface
+     */
+    public function filterByRatingAverage($ratingAverage = null, $comparison = null)
+    {
+        if (is_array($ratingAverage)) {
+            $useMinMax = false;
+            if (isset($ratingAverage['min'])) {
+                $this->addUsingAlias(TrackPeer::RATING_AVERAGE, $ratingAverage['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($ratingAverage['max'])) {
+                $this->addUsingAlias(TrackPeer::RATING_AVERAGE, $ratingAverage['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(TrackPeer::RATING_AVERAGE, $ratingAverage, $comparison);
     }
 
     /**

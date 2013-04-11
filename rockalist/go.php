@@ -1,9 +1,9 @@
 <?php
+session_start();
 function getUser() {
-    session_start();
     if (isset($_SESSION['user'])) {
         echo $_SESSION['user'];
-        echo "<a href='./logout.php' id='active-user-logout'>Log out</a>";
+        echo "<a href='./logout.php' class='btn' id='active-user-logout'>Log out</a>";
     }
 }
 ?>
@@ -61,15 +61,22 @@ function getUser() {
         </div>
     </script>
     <script id="tpl-track-edit" class="track-edit" type="text/x-handlebars-template">
-        <input type="text" id="edit-url" placeholder="New url for this track"><br/>
-        <input type="text" id="edit-title" placeholder="New title for this track"><br/>
-        <input type="text" id="edit-artist" placeholder="New artist for this track"><br/>
-        <input type="text" id="edit-album" placeholder="New album for this track"><br/>
-        <input type="text" id="edit-genre" placeholder="New genre for this track"><br/>
-        <input type="text" id="edit-year" placeholder="New year for this track"><br>
-        <div id="commit-edit" class="btn btn-info">Done</div>
+        <div data-track-id="{{id}}">
+        <label>Youtube Url</label>
+        <input type="text" id="edit-url" placeholder="Track url"><br/>
+        <label>Title Name</label>
+        <input type="text" id="edit-title" placeholder="Track title"><br/>
+        <label>Artist Name</label>
+        <input type="text" id="edit-artist" placeholder="Track artist"><br/>
+        <label>Album Name</label>
+        <input type="text" id="edit-album" placeholder="Track album"><br/>
+        <label>Genre</label>
+        <input type="text" id="edit-genre" placeholder="Track genre"><br/>
+        <label>Year</label>
+        <input type="text" id="edit-year" placeholder="Track year"><br/>
+        <div id="commit-edit" class="btn btn-info pull-right">Done</div>
+        </div>
     </script>
-    
     
    <div id="page">
         <div id="header">
@@ -201,8 +208,6 @@ function getUser() {
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="public/js/vendor/bootstrap.min.js"></script>
     <script type="text/javascript" src="public/js/vendor/handlebars.js"></script>
-    <script type="text/javascript" src="public/js/vendor/jsString.js"></script>
-    <script type="text/javascript" src="public/js/obj/playlist.js"></script>
     <script type="text/javascript" src="public/js/site.js"></script>
     
     <!-- Modal Registration -->

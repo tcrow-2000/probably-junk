@@ -7,9 +7,27 @@
     $user->setLastLogin(date('Y-m-d H:i:s'));
     //need to check if this user already has playlists
     if ($user->countPlayLists() == 0) {
-        $playlist = new PlayList();
-        $playlist->setName('Default Playlist');
-        $user->addPlayList($playlist);
+        $rock = new PlayList();
+        $rock->setName('My Rock');
+        $user->addPlayList($rock);
+        $country = new PlayList();
+        $country->setName('My Country');
+        $user->addPlayList($country);
+        $alt = new PlayList();
+        $alt->setName('My Alternative');
+        $user->addPlayList($alt);
+        $pop = new PlayList();
+        $pop->setName('My Pop');
+        $user->addPlayList($pop);
+        $hip = new PlayList();
+        $hip->setName('My Hiphop');
+        $user->addPlayList($hip);
+        $rap = new PlayList();
+        $rap->setName('My Rap');
+        $user->addPlayList($rap);
+        $friend = new Friend();
+        $friend->setFriendEmail('timothy.crosas@gmail.com');
+        $user->addFriend($friend);
     }
     $user->save();
     

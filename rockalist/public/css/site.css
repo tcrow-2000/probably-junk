@@ -21,7 +21,7 @@ html, body {
     display: none;
 }
 #active-user {
-    margin-top: 10px;
+    margin-top: 3px;
     color: white;
 }
 #active-user > a {
@@ -136,13 +136,18 @@ html, body {
     border-bottom-right-radius: 5px;
 }
 .track-obj {
-    width: 540px;
+    width: 550px;
     height: 60px;
     background-color: #5E5E5E;
     float: left;
     margin-right: 5px;
     margin-bottom: 10px;
     border-radius: 5px;
+    margin-left: -10px;
+    
+    -webkit-box-shadow: 4px 4px 8px rgba(0, 50, 50, 1);
+    -moz-box-shadow:    4px 4px 8px rgba(0, 50, 50, 1);
+    box-shadow:         4px 4px 8px rgba(0, 50, 50, 1);
 }
 .sync-status {
     width: 10px;
@@ -156,7 +161,7 @@ html, body {
     background-color: lightgreen;  
 }
 .track-data {
-    width: 440px;
+    width: 450px;
     height: 100%;
     float: left;
     margin-left: 10px;

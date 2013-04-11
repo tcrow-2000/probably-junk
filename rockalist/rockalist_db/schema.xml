@@ -10,6 +10,9 @@
     <column name="artist_id" type="integer" required="true"/>
     <column name="album_id" type="integer" required="false"/>
     <column name="user_id" type="integer" required="true"/>
+    <column name="rating_total" type="integer" required="false"/>
+    <column name="rating_count" type="integer" required="false"/>
+    <column name="rating_average" type="integer" required="false"/>
     <foreign-key foreignTable="artist" phpName="Artist" refPhpName="Track">
       <reference local="artist_id" foreign="id"/>
     </foreign-key>
@@ -44,6 +47,14 @@
    <column name="date_added" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP" />
    <column name="last_login" type="TIMESTAMP" required="false" />
   </table>
+  <table name="friend" phpName="Friend">
+   <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+   <column name="user_id" type="integer" required="true"/>
+   <column name="friend_email" type="varchar" size="255" required="true"/>
+    <foreign-key foreignTable="user" phpName="User" refPhpName="Friend">
+      <reference local="user_id" foreign="id"/>
+    </foreign-key>
+  </table>
   <table name="playlist" phpName="PlayList">
    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
    <column name="name" type="varchar" size="128" required="true" />
@@ -55,6 +66,7 @@
   <table name="playlisttrack" phpName="PlayListTrack" isCrossRef="true">
    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
    <column name="synced" type="boolean" required="true" defaultValue="false" />
+   <column name="err_msg" type="varchar" size="255" required="false" />
    <column name="playlist_id" type="integer" required="true" />
    <column name="track_id" type="integer" required="true" />
    <foreign-key foreignTable="playlist" phpName="PlayList" refPhpName="PlayListTrack">

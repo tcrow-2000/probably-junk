@@ -93,6 +93,12 @@ abstract class BaseUser extends BaseObject implements Persistent
     protected $collTracksPartial;
 
     /**
+     * @var        PropelObjectCollection|Friend[] Collection to store aggregation of Friend objects.
+     */
+    protected $collFriends;
+    protected $collFriendsPartial;
+
+    /**
      * @var        PropelObjectCollection|PlayList[] Collection to store aggregation of PlayList objects.
      */
     protected $collPlaylists;
@@ -123,6 +129,12 @@ abstract class BaseUser extends BaseObject implements Persistent
      * @var		PropelObjectCollection
      */
     protected $tracksScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $friendsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -640,6 +652,8 @@ abstract class BaseUser extends BaseObject implements Persistent
 
             $this->collTracks = null;
 
+            $this->collFriends = null;
+
             $this->collPlaylists = null;
 
         } // if (deep)
@@ -778,6 +792,24 @@ abstract class BaseUser extends BaseObject implements Persistent
 
             if ($this->collTracks !== null) {
                 foreach ($this->collTracks as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->friendsScheduledForDeletion !== null) {
+                if (!$this->friendsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->friendsScheduledForDeletion as $friend) {
+                        // need to save related object because we set the relation to null
+                        $friend->save($con);
+                    }
+                    $this->friendsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collFriends !== null) {
+                foreach ($this->collFriends as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1000,6 +1032,14 @@ abstract class BaseUser extends BaseObject implements Persistent
                     }
                 }
 
+                if ($this->collFriends !== null) {
+                    foreach ($this->collFriends as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
                 if ($this->collPlaylists !== null) {
                     foreach ($this->collPlaylists as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
@@ -1112,6 +1152,9 @@ abstract class BaseUser extends BaseObject implements Persistent
         if ($includeForeignObjects) {
             if (null !== $this->collTracks) {
                 $result['Tracks'] = $this->collTracks->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collFriends) {
+                $result['Friends'] = $this->collFriends->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collPlaylists) {
                 $result['Playlists'] = $this->collPlaylists->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1322,6 +1365,12 @@ abstract class BaseUser extends BaseObject implements Persistent
                 }
             }
 
+            foreach ($this->getFriends() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addFriend($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getPlaylists() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addPlaylist($relObj->copy($deepCopy));
@@ -1391,6 +1440,9 @@ abstract class BaseUser extends BaseObject implements Persistent
     {
         if ('Track' == $relationName) {
             $this->initTracks();
+        }
+        if ('Friend' == $relationName) {
+            $this->initFriends();
         }
         if ('Playlist' == $relationName) {
             $this->initPlaylists();
@@ -1668,6 +1720,226 @@ abstract class BaseUser extends BaseObject implements Persistent
     }
 
     /**
+     * Clears out the collFriends collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return User The current object (for fluent API support)
+     * @see        addFriends()
+     */
+    public function clearFriends()
+    {
+        $this->collFriends = null; // important to set this to null since that means it is uninitialized
+        $this->collFriendsPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collFriends collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialFriends($v = true)
+    {
+        $this->collFriendsPartial = $v;
+    }
+
+    /**
+     * Initializes the collFriends collection.
+     *
+     * By default this just sets the collFriends collection to an empty array (like clearcollFriends());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initFriends($overrideExisting = true)
+    {
+        if (null !== $this->collFriends && !$overrideExisting) {
+            return;
+        }
+        $this->collFriends = new PropelObjectCollection();
+        $this->collFriends->setModel('Friend');
+    }
+
+    /**
+     * Gets an array of Friend objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this User is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|Friend[] List of Friend objects
+     * @throws PropelException
+     */
+    public function getFriends($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collFriendsPartial && !$this->isNew();
+        if (null === $this->collFriends || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collFriends) {
+                // return empty collection
+                $this->initFriends();
+            } else {
+                $collFriends = FriendQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collFriendsPartial && count($collFriends)) {
+                      $this->initFriends(false);
+
+                      foreach ($collFriends as $obj) {
+                        if (false == $this->collFriends->contains($obj)) {
+                          $this->collFriends->append($obj);
+                        }
+                      }
+
+                      $this->collFriendsPartial = true;
+                    }
+
+                    $collFriends->getInternalIterator()->rewind();
+
+                    return $collFriends;
+                }
+
+                if ($partial && $this->collFriends) {
+                    foreach ($this->collFriends as $obj) {
+                        if ($obj->isNew()) {
+                            $collFriends[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collFriends = $collFriends;
+                $this->collFriendsPartial = false;
+            }
+        }
+
+        return $this->collFriends;
+    }
+
+    /**
+     * Sets a collection of Friend objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $friends A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return User The current object (for fluent API support)
+     */
+    public function setFriends(PropelCollection $friends, PropelPDO $con = null)
+    {
+        $friendsToDelete = $this->getFriends(new Criteria(), $con)->diff($friends);
+
+
+        $this->friendsScheduledForDeletion = $friendsToDelete;
+
+        foreach ($friendsToDelete as $friendRemoved) {
+            $friendRemoved->setUser(null);
+        }
+
+        $this->collFriends = null;
+        foreach ($friends as $friend) {
+            $this->addFriend($friend);
+        }
+
+        $this->collFriends = $friends;
+        $this->collFriendsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Friend objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related Friend objects.
+     * @throws PropelException
+     */
+    public function countFriends(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collFriendsPartial && !$this->isNew();
+        if (null === $this->collFriends || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collFriends) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getFriends());
+            }
+            $query = FriendQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collFriends);
+    }
+
+    /**
+     * Method called to associate a Friend object to this object
+     * through the Friend foreign key attribute.
+     *
+     * @param   Friend $l Friend
+     * @return User The current object (for fluent API support)
+     */
+    public function addFriend(Friend $l)
+    {
+        if ($this->collFriends === null) {
+            $this->initFriends();
+            $this->collFriendsPartial = true;
+        }
+        if (!in_array($l, $this->collFriends->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddFriend($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	Friend $friend The friend object to add.
+     */
+    protected function doAddFriend($friend)
+    {
+        $this->collFriends[]= $friend;
+        $friend->setUser($this);
+    }
+
+    /**
+     * @param	Friend $friend The friend object to remove.
+     * @return User The current object (for fluent API support)
+     */
+    public function removeFriend($friend)
+    {
+        if ($this->getFriends()->contains($friend)) {
+            $this->collFriends->remove($this->collFriends->search($friend));
+            if (null === $this->friendsScheduledForDeletion) {
+                $this->friendsScheduledForDeletion = clone $this->collFriends;
+                $this->friendsScheduledForDeletion->clear();
+            }
+            $this->friendsScheduledForDeletion[]= clone $friend;
+            $friend->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears out the collPlaylists collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
@@ -1929,6 +2201,11 @@ abstract class BaseUser extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collFriends) {
+                foreach ($this->collFriends as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collPlaylists) {
                 foreach ($this->collPlaylists as $o) {
                     $o->clearAllReferences($deep);
@@ -1942,6 +2219,10 @@ abstract class BaseUser extends BaseObject implements Persistent
             $this->collTracks->clearIterator();
         }
         $this->collTracks = null;
+        if ($this->collFriends instanceof PropelCollection) {
+            $this->collFriends->clearIterator();
+        }
+        $this->collFriends = null;
         if ($this->collPlaylists instanceof PropelCollection) {
             $this->collPlaylists->clearIterator();
         }

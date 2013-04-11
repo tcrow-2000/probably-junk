@@ -81,14 +81,17 @@ var Playlist = function(playlistData) {
         var t = new Track(trackData, this.cacheId);
         var trackId = t.data.Id;
         this.tracks[trackId] = t;
-        this.titleSort.push({name: t.data.Title, id: trackId});
-        this.artistSort.push({name: t.data.ArtistName, id: trackId});
-        if (t.data.AlbumName) {
-            this.albumSort.push({name: t.data.AlbumName, id: trackId});
-        } else {
-            this.albumSort.push({name: 'Unknown', id: trackId});
-        }
+        this.addToSort(t);
         t.render();
+    };
+    this.addToSort = function(track) {
+        this.titleSort.push({name: track.data.Title, id: track.data.Id});
+        this.artistSort.push({name: track.data.ArtistName, id: track.data.Id});
+        if (track.data.AlbumName) {
+            this.albumSort.push({name: track.data.AlbumName, id: track.data.Id});
+        } else {
+            this.albumSort.push({name: 'Unknown', id: track.data.Id});
+        }
     };
     this.acceptCopy = function(trackId) {
         $.post('do/action.php', {'action':'copyTrack', 'trackId':trackId, 'playlistId': this.data.Id},
@@ -148,6 +151,21 @@ var Playlist = function(playlistData) {
             }, 
         'json');
         
+    };
+    this.editTrack = function(trackId, trackDetails) {
+        var self = this;
+        $.post('do/action.php', 
+            $.extend({'action':'editTrack', 'trackId':trackId}, trackDetails),
+            function(trackData) {
+                delete self.tracks[trackId];
+                var newTrack = new Track(trackData, self.cacheId);
+                this.tracks[trackId] = newTrack;
+                this.addToSort(newTrack);
+                var cache = $('#'+ self.cacheId);
+                cache.find(".track-obj[data-track-id='" + trackId + "']").remove();
+                newTrack.render();
+            },
+        'json');
     };
     this.render = function() {
         var context = {'id': this.data.Id, 'name': this.data.Name};
@@ -492,7 +510,7 @@ $(document).ready(function() {
         var trackId = $(this).parents('.track-obj').data('track-id');
         var track = Playlist.getTrack(trackId);
         var options = {'placement':'left', 'html': true, 'trigger': 'manual'};
-        options.content = Track.edit_template();
+        options.content = Track.edit_template({'id':trackId});
         $(this)
         .popover(options)
         .popover('show');
@@ -502,6 +520,44 @@ $(document).ready(function() {
         $('#edit-album').val(track.data.AlbumName);
         $('#edit-genre').val(track.data.Genre);
         $('#edit-year').val(track.data.Year);
+    });
+    
+    $(document).delegate('#commit-edit','click', function() {
+        var u,t,ar,al,g,y;
+        if (!$('#edit-url').val()) {
+            $('#edit-url').focus();
+            return;
+        }
+        u = $('#edit-url').val();
+        if (!$('#edit-title').val()) {
+            $('#edit-title').focus();
+            return;
+        }
+        t = $('#edit-title').val();
+        if (!$('#edit-artist').val()) {
+            $('#edit-artist').focus();
+            return;
+        }
+        ar = $('#edit-artist').val();
+        al = $('#edit-album').val();
+        g = $('#edit-genre').val();
+        y = $('#edit-year').val();
+        var trackId = $(this).parent().data('track-id');
+        UserPlaylists[currentPlaylistId].editTrack(trackId, {
+           'url':u,
+           'title':t,
+           'artist':ar,
+           'album':al,
+           'genre':g,
+           'year':y
+        });
+    });
+    /*
+     * Track Actions [RATE] 
+     * 
+     */
+    $(document).delegate('#action-rate','click', function() {
+        
     });
     
     /*

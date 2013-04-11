@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Selection</title>
+    
+    <style type="text/css">
+        
+    #background {
+        background-color: #252020;
+        height: 500px;
+        width: 500px;
+        padding-top: 20px;
+    }
+    .selection {
+        float: left;
+        width:150px;
+        height: 80px;
+        line-height: 80px;
+        font-size: 35px;
+        text-align: center;
+        font-family: "Trebuchet MS";
+        cursor: pointer;
+    }
+    #selection-box {
+        height: 76px;
+        width: 146px;
+        border: 2px solid grey;
+        border-bottom: 2px solid red;
+        position: absolute;
+        text-align: bottom;
+        background: -moz-linear-gradient(top,  rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.65) 1%, rgba(0,0,0,0) 61%, rgba(0,0,0,0) 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.65)), color-stop(1%,rgba(0,0,0,0.65)), color-stop(61%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0))); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.65) 1%,rgba(0,0,0,0) 61%,rgba(0,0,0,0) 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.65) 1%,rgba(0,0,0,0) 61%,rgba(0,0,0,0) 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.65) 1%,rgba(0,0,0,0) 61%,rgba(0,0,0,0) 100%); /* IE10+ */
+        background: linear-gradient(to bottom,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.65) 1%,rgba(0,0,0,0) 61%,rgba(0,0,0,0) 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+    }
+    #selection-arrow {
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 20px solid red;
+        margin: 0 auto;
+        margin-top: 58px;
+    }
+    #selection-container {
+        margin: 0 auto;
+        height: 80px;
+        width: 450px;
+        position: relative;
+        -moz-box-shadow:0px 0px 10px 5px #444  inset;
+        -webkit-box-shadow:0px 0px 10px 5px #444  inset;
+        box-shadow:0px 0px 10px 5px #444  inset;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#444444')";
+        filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#444444');    
+        
+        background: rgb(229,230,150); /* Old browsers */
+        background: -moz-linear-gradient(top,  rgba(229,230,150,1) 42%, rgba(238,242,159,1) 70%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(42%,rgba(229,230,150,1)), color-stop(70%,rgba(238,242,159,1))); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* IE10+ */
+        background: linear-gradient(to bottom,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e696', endColorstr='#eef29f',GradientType=0 ); /* IE6-9 */
+    }
+    </style>
+</head>
+<body>
+    <div id="background">
+        <div id="selection-container">
+            <div id="selection-box"><div id="selection-arrow"></div></div>
+            <div class="selection">Playlist</div>
+            <div class="selection">Friends</div>
+            <div class="selection">Settings</div>
+        </div>
+    </div>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.selection').click(function() {
+                var p = $(this).position().left;
+                $('#selection-box').animate({left: p}, 'slow');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -24,13 +24,13 @@ abstract class BaseTrackPeer
     const TM_CLASS = 'TrackTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 12;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 12;
 
     /** the column name for the id field */
     const ID = 'track.id';
@@ -59,6 +59,15 @@ abstract class BaseTrackPeer
     /** the column name for the user_id field */
     const USER_ID = 'track.user_id';
 
+    /** the column name for the rating_total field */
+    const RATING_TOTAL = 'track.rating_total';
+
+    /** the column name for the rating_count field */
+    const RATING_COUNT = 'track.rating_count';
+
+    /** the column name for the rating_average field */
+    const RATING_AVERAGE = 'track.rating_average';
+
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -78,12 +87,12 @@ abstract class BaseTrackPeer
      * e.g. TrackPeer::$fieldNames[TrackPeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'Url', 'Title', 'Genre', 'Year', 'DateAdded', 'ArtistId', 'AlbumId', 'UserId', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'url', 'title', 'genre', 'year', 'dateAdded', 'artistId', 'albumId', 'userId', ),
-        BasePeer::TYPE_COLNAME => array (TrackPeer::ID, TrackPeer::URL, TrackPeer::TITLE, TrackPeer::GENRE, TrackPeer::YEAR, TrackPeer::DATE_ADDED, TrackPeer::ARTIST_ID, TrackPeer::ALBUM_ID, TrackPeer::USER_ID, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'URL', 'TITLE', 'GENRE', 'YEAR', 'DATE_ADDED', 'ARTIST_ID', 'ALBUM_ID', 'USER_ID', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'url', 'title', 'genre', 'year', 'date_added', 'artist_id', 'album_id', 'user_id', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'Url', 'Title', 'Genre', 'Year', 'DateAdded', 'ArtistId', 'AlbumId', 'UserId', 'RatingTotal', 'RatingCount', 'RatingAverage', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'url', 'title', 'genre', 'year', 'dateAdded', 'artistId', 'albumId', 'userId', 'ratingTotal', 'ratingCount', 'ratingAverage', ),
+        BasePeer::TYPE_COLNAME => array (TrackPeer::ID, TrackPeer::URL, TrackPeer::TITLE, TrackPeer::GENRE, TrackPeer::YEAR, TrackPeer::DATE_ADDED, TrackPeer::ARTIST_ID, TrackPeer::ALBUM_ID, TrackPeer::USER_ID, TrackPeer::RATING_TOTAL, TrackPeer::RATING_COUNT, TrackPeer::RATING_AVERAGE, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'URL', 'TITLE', 'GENRE', 'YEAR', 'DATE_ADDED', 'ARTIST_ID', 'ALBUM_ID', 'USER_ID', 'RATING_TOTAL', 'RATING_COUNT', 'RATING_AVERAGE', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'url', 'title', 'genre', 'year', 'date_added', 'artist_id', 'album_id', 'user_id', 'rating_total', 'rating_count', 'rating_average', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
     );
 
     /**
@@ -93,12 +102,12 @@ abstract class BaseTrackPeer
      * e.g. TrackPeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Url' => 1, 'Title' => 2, 'Genre' => 3, 'Year' => 4, 'DateAdded' => 5, 'ArtistId' => 6, 'AlbumId' => 7, 'UserId' => 8, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'url' => 1, 'title' => 2, 'genre' => 3, 'year' => 4, 'dateAdded' => 5, 'artistId' => 6, 'albumId' => 7, 'userId' => 8, ),
-        BasePeer::TYPE_COLNAME => array (TrackPeer::ID => 0, TrackPeer::URL => 1, TrackPeer::TITLE => 2, TrackPeer::GENRE => 3, TrackPeer::YEAR => 4, TrackPeer::DATE_ADDED => 5, TrackPeer::ARTIST_ID => 6, TrackPeer::ALBUM_ID => 7, TrackPeer::USER_ID => 8, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'URL' => 1, 'TITLE' => 2, 'GENRE' => 3, 'YEAR' => 4, 'DATE_ADDED' => 5, 'ARTIST_ID' => 6, 'ALBUM_ID' => 7, 'USER_ID' => 8, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'url' => 1, 'title' => 2, 'genre' => 3, 'year' => 4, 'date_added' => 5, 'artist_id' => 6, 'album_id' => 7, 'user_id' => 8, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Url' => 1, 'Title' => 2, 'Genre' => 3, 'Year' => 4, 'DateAdded' => 5, 'ArtistId' => 6, 'AlbumId' => 7, 'UserId' => 8, 'RatingTotal' => 9, 'RatingCount' => 10, 'RatingAverage' => 11, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'url' => 1, 'title' => 2, 'genre' => 3, 'year' => 4, 'dateAdded' => 5, 'artistId' => 6, 'albumId' => 7, 'userId' => 8, 'ratingTotal' => 9, 'ratingCount' => 10, 'ratingAverage' => 11, ),
+        BasePeer::TYPE_COLNAME => array (TrackPeer::ID => 0, TrackPeer::URL => 1, TrackPeer::TITLE => 2, TrackPeer::GENRE => 3, TrackPeer::YEAR => 4, TrackPeer::DATE_ADDED => 5, TrackPeer::ARTIST_ID => 6, TrackPeer::ALBUM_ID => 7, TrackPeer::USER_ID => 8, TrackPeer::RATING_TOTAL => 9, TrackPeer::RATING_COUNT => 10, TrackPeer::RATING_AVERAGE => 11, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'URL' => 1, 'TITLE' => 2, 'GENRE' => 3, 'YEAR' => 4, 'DATE_ADDED' => 5, 'ARTIST_ID' => 6, 'ALBUM_ID' => 7, 'USER_ID' => 8, 'RATING_TOTAL' => 9, 'RATING_COUNT' => 10, 'RATING_AVERAGE' => 11, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'url' => 1, 'title' => 2, 'genre' => 3, 'year' => 4, 'date_added' => 5, 'artist_id' => 6, 'album_id' => 7, 'user_id' => 8, 'rating_total' => 9, 'rating_count' => 10, 'rating_average' => 11, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
     );
 
     /**
@@ -181,6 +190,9 @@ abstract class BaseTrackPeer
             $criteria->addSelectColumn(TrackPeer::ARTIST_ID);
             $criteria->addSelectColumn(TrackPeer::ALBUM_ID);
             $criteria->addSelectColumn(TrackPeer::USER_ID);
+            $criteria->addSelectColumn(TrackPeer::RATING_TOTAL);
+            $criteria->addSelectColumn(TrackPeer::RATING_COUNT);
+            $criteria->addSelectColumn(TrackPeer::RATING_AVERAGE);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.url');
@@ -191,6 +203,9 @@ abstract class BaseTrackPeer
             $criteria->addSelectColumn($alias . '.artist_id');
             $criteria->addSelectColumn($alias . '.album_id');
             $criteria->addSelectColumn($alias . '.user_id');
+            $criteria->addSelectColumn($alias . '.rating_total');
+            $criteria->addSelectColumn($alias . '.rating_count');
+            $criteria->addSelectColumn($alias . '.rating_average');
         }
     }
 

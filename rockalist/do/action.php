@@ -36,10 +36,36 @@ switch($action) {
         
     case 'userPlaylists':
         $user = thisUser();
-        if ($user)
-            echo $user->getPlayLists()->toJSON();
+        if ($user) {
+            $playlists = PlayListQuery::create()
+            ->filterByUser($user)
+            ->select(array('Id','Name'))
+            ->find();
+            echo $playlists->toJSON();
+        }
         break;
     
+    case 'friendsPlaylists':
+        $user = thisUser();
+        if ($user) {
+            $friends = $user->getFriends();
+            $playlists = array();
+            foreach($friends as $friend) {
+                $email = $friend->getFriendEmail();
+                //$playlists[] = $email;
+                $fu = UserQuery::create()->findOneByEmail($email);
+                $pdata =  "'$email':".PlayListQuery::create()
+                                        ->filterByUser($fu)
+                                        ->select(array('Id','Name'))
+                                        ->find()
+                                        ->toJSON();
+                $playlists[] = $pdata;        
+            }
+            
+            echo "{".implode(",",$playlists)."}";
+        }
+        break;
+        
     case 'newPlaylist':
         $user = thisUser();
         if ($user) {

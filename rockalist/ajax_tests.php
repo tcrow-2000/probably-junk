@@ -12,7 +12,7 @@ $_SESSION['user'] = 'xxx@gmail.com';
     $(document).ready(function() {
        
        function testRegistration() {
-           $.post('do/action.php', {'action':'registerUser','email':'xxx@gmail.com','pass':'blahblah'},
+           $.post('do/action.php', {'action':'registerUser','email':'timothy.crosas@gmail.com','pass':'rockalist5576'},
                 function(data) {
                     console.log(data);
                 },
@@ -29,6 +29,14 @@ $_SESSION['user'] = 'xxx@gmail.com';
        }
        function testPlaylists() {
            $.post('do/action.php', {'action':'userPlaylists'},
+                function(data) {
+                    console.log(data);
+                },
+                'json'
+           ); 
+       }
+       function testFriendsPlaylists() {
+           $.post('do/action.php', {'action':'friendsPlaylists'},
                 function(data) {
                     console.log(data);
                 },
@@ -71,7 +79,7 @@ $_SESSION['user'] = 'xxx@gmail.com';
             return text;
         }
        function testLoadTimes() {
-           for (i = 0; i < 100; i++) {
+           for (i = 0; i < 20; i++) {
                console.log($.ajax({
                 type: "POST",
                 data: {'action':'newTrack', 
@@ -91,6 +99,7 @@ $_SESSION['user'] = 'xxx@gmail.com';
        //testClientRequestTrackList();
        testLoadTimes();
        //testGetTracks();
+       //testFriendsPlaylists();
     });
     </script>
 </head>

@@ -20,6 +20,9 @@ CREATE TABLE `track`
     `artist_id` INTEGER NOT NULL,
     `album_id` INTEGER,
     `user_id` INTEGER NOT NULL,
+    `rating_total` INTEGER,
+    `rating_count` INTEGER,
+    `rating_average` INTEGER,
     PRIMARY KEY (`id`),
     INDEX `track_FI_1` (`artist_id`),
     INDEX `track_FI_2` (`album_id`),
@@ -76,6 +79,21 @@ CREATE TABLE `user`
 ) ENGINE=MyISAM;
 
 -- ---------------------------------------------------------------------
+-- friend
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `friend`;
+
+CREATE TABLE `friend`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `user_id` INTEGER NOT NULL,
+    `friend_email` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `friend_FI_1` (`user_id`)
+) ENGINE=MyISAM;
+
+-- ---------------------------------------------------------------------
 -- playlist
 -- ---------------------------------------------------------------------
 
@@ -100,6 +118,7 @@ CREATE TABLE `playlisttrack`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `synced` TINYINT(1) DEFAULT 0 NOT NULL,
+    `err_msg` VARCHAR(255),
     `playlist_id` INTEGER NOT NULL,
     `track_id` INTEGER NOT NULL,
     PRIMARY KEY (`id`),

@@ -85,6 +85,24 @@ abstract class BaseTrack extends BaseObject implements Persistent
     protected $user_id;
 
     /**
+     * The value for the rating_total field.
+     * @var        int
+     */
+    protected $rating_total;
+
+    /**
+     * The value for the rating_count field.
+     * @var        int
+     */
+    protected $rating_count;
+
+    /**
+     * The value for the rating_average field.
+     * @var        int
+     */
+    protected $rating_average;
+
+    /**
      * @var        Artist
      */
     protected $aArtist;
@@ -291,6 +309,39 @@ abstract class BaseTrack extends BaseObject implements Persistent
     }
 
     /**
+     * Get the [rating_total] column value.
+     *
+     * @return int
+     */
+    public function getRatingTotal()
+    {
+
+        return $this->rating_total;
+    }
+
+    /**
+     * Get the [rating_count] column value.
+     *
+     * @return int
+     */
+    public function getRatingCount()
+    {
+
+        return $this->rating_count;
+    }
+
+    /**
+     * Get the [rating_average] column value.
+     *
+     * @return int
+     */
+    public function getRatingAverage()
+    {
+
+        return $this->rating_average;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -494,6 +545,69 @@ abstract class BaseTrack extends BaseObject implements Persistent
     } // setUserId()
 
     /**
+     * Set the value of [rating_total] column.
+     *
+     * @param int $v new value
+     * @return Track The current object (for fluent API support)
+     */
+    public function setRatingTotal($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->rating_total !== $v) {
+            $this->rating_total = $v;
+            $this->modifiedColumns[] = TrackPeer::RATING_TOTAL;
+        }
+
+
+        return $this;
+    } // setRatingTotal()
+
+    /**
+     * Set the value of [rating_count] column.
+     *
+     * @param int $v new value
+     * @return Track The current object (for fluent API support)
+     */
+    public function setRatingCount($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->rating_count !== $v) {
+            $this->rating_count = $v;
+            $this->modifiedColumns[] = TrackPeer::RATING_COUNT;
+        }
+
+
+        return $this;
+    } // setRatingCount()
+
+    /**
+     * Set the value of [rating_average] column.
+     *
+     * @param int $v new value
+     * @return Track The current object (for fluent API support)
+     */
+    public function setRatingAverage($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->rating_average !== $v) {
+            $this->rating_average = $v;
+            $this->modifiedColumns[] = TrackPeer::RATING_AVERAGE;
+        }
+
+
+        return $this;
+    } // setRatingAverage()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -534,6 +648,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
             $this->artist_id = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
             $this->album_id = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
             $this->user_id = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+            $this->rating_total = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
+            $this->rating_count = ($row[$startcol + 10] !== null) ? (int) $row[$startcol + 10] : null;
+            $this->rating_average = ($row[$startcol + 11] !== null) ? (int) $row[$startcol + 11] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -543,7 +660,7 @@ abstract class BaseTrack extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 9; // 9 = TrackPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 12; // 12 = TrackPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating Track object", $e);
@@ -867,6 +984,15 @@ abstract class BaseTrack extends BaseObject implements Persistent
         if ($this->isColumnModified(TrackPeer::USER_ID)) {
             $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
+        if ($this->isColumnModified(TrackPeer::RATING_TOTAL)) {
+            $modifiedColumns[':p' . $index++]  = '`rating_total`';
+        }
+        if ($this->isColumnModified(TrackPeer::RATING_COUNT)) {
+            $modifiedColumns[':p' . $index++]  = '`rating_count`';
+        }
+        if ($this->isColumnModified(TrackPeer::RATING_AVERAGE)) {
+            $modifiedColumns[':p' . $index++]  = '`rating_average`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `track` (%s) VALUES (%s)',
@@ -904,6 +1030,15 @@ abstract class BaseTrack extends BaseObject implements Persistent
                         break;
                     case '`user_id`':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
+                    case '`rating_total`':
+                        $stmt->bindValue($identifier, $this->rating_total, PDO::PARAM_INT);
+                        break;
+                    case '`rating_count`':
+                        $stmt->bindValue($identifier, $this->rating_count, PDO::PARAM_INT);
+                        break;
+                    case '`rating_average`':
+                        $stmt->bindValue($identifier, $this->rating_average, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -1098,6 +1233,15 @@ abstract class BaseTrack extends BaseObject implements Persistent
             case 8:
                 return $this->getUserId();
                 break;
+            case 9:
+                return $this->getRatingTotal();
+                break;
+            case 10:
+                return $this->getRatingCount();
+                break;
+            case 11:
+                return $this->getRatingAverage();
+                break;
             default:
                 return null;
                 break;
@@ -1136,6 +1280,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
             $keys[6] => $this->getArtistId(),
             $keys[7] => $this->getAlbumId(),
             $keys[8] => $this->getUserId(),
+            $keys[9] => $this->getRatingTotal(),
+            $keys[10] => $this->getRatingCount(),
+            $keys[11] => $this->getRatingAverage(),
         );
         if ($includeForeignObjects) {
             if (null !== $this->aArtist) {
@@ -1211,6 +1358,15 @@ abstract class BaseTrack extends BaseObject implements Persistent
             case 8:
                 $this->setUserId($value);
                 break;
+            case 9:
+                $this->setRatingTotal($value);
+                break;
+            case 10:
+                $this->setRatingCount($value);
+                break;
+            case 11:
+                $this->setRatingAverage($value);
+                break;
         } // switch()
     }
 
@@ -1244,6 +1400,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
         if (array_key_exists($keys[6], $arr)) $this->setArtistId($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setAlbumId($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setUserId($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setRatingTotal($arr[$keys[9]]);
+        if (array_key_exists($keys[10], $arr)) $this->setRatingCount($arr[$keys[10]]);
+        if (array_key_exists($keys[11], $arr)) $this->setRatingAverage($arr[$keys[11]]);
     }
 
     /**
@@ -1264,6 +1423,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
         if ($this->isColumnModified(TrackPeer::ARTIST_ID)) $criteria->add(TrackPeer::ARTIST_ID, $this->artist_id);
         if ($this->isColumnModified(TrackPeer::ALBUM_ID)) $criteria->add(TrackPeer::ALBUM_ID, $this->album_id);
         if ($this->isColumnModified(TrackPeer::USER_ID)) $criteria->add(TrackPeer::USER_ID, $this->user_id);
+        if ($this->isColumnModified(TrackPeer::RATING_TOTAL)) $criteria->add(TrackPeer::RATING_TOTAL, $this->rating_total);
+        if ($this->isColumnModified(TrackPeer::RATING_COUNT)) $criteria->add(TrackPeer::RATING_COUNT, $this->rating_count);
+        if ($this->isColumnModified(TrackPeer::RATING_AVERAGE)) $criteria->add(TrackPeer::RATING_AVERAGE, $this->rating_average);
 
         return $criteria;
     }
@@ -1335,6 +1497,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
         $copyObj->setArtistId($this->getArtistId());
         $copyObj->setAlbumId($this->getAlbumId());
         $copyObj->setUserId($this->getUserId());
+        $copyObj->setRatingTotal($this->getRatingTotal());
+        $copyObj->setRatingCount($this->getRatingCount());
+        $copyObj->setRatingAverage($this->getRatingAverage());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -2009,6 +2174,9 @@ abstract class BaseTrack extends BaseObject implements Persistent
         $this->artist_id = null;
         $this->album_id = null;
         $this->user_id = null;
+        $this->rating_total = null;
+        $this->rating_count = null;
+        $this->rating_average = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;

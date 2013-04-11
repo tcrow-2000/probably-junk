@@ -2,24 +2,24 @@
 
 
 /**
- * Base class that represents a row from the 'playlisttrack' table.
+ * Base class that represents a row from the 'friend' table.
  *
  *
  *
  * @package    propel.generator.rockalist.om
  */
-abstract class BasePlayListTrack extends BaseObject implements Persistent
+abstract class BaseFriend extends BaseObject implements Persistent
 {
     /**
      * Peer class name
      */
-    const PEER = 'PlayListTrackPeer';
+    const PEER = 'FriendPeer';
 
     /**
      * The Peer class.
      * Instance provides a convenient way of calling static methods on a class
      * that calling code may not be able to identify.
-     * @var        PlayListTrackPeer
+     * @var        FriendPeer
      */
     protected static $peer;
 
@@ -36,39 +36,21 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     protected $id;
 
     /**
-     * The value for the synced field.
-     * Note: this column has a database default value of: false
-     * @var        boolean
+     * The value for the user_id field.
+     * @var        int
      */
-    protected $synced;
+    protected $user_id;
 
     /**
-     * The value for the err_msg field.
+     * The value for the friend_email field.
      * @var        string
      */
-    protected $err_msg;
+    protected $friend_email;
 
     /**
-     * The value for the playlist_id field.
-     * @var        int
+     * @var        User
      */
-    protected $playlist_id;
-
-    /**
-     * The value for the track_id field.
-     * @var        int
-     */
-    protected $track_id;
-
-    /**
-     * @var        PlayList
-     */
-    protected $aPlayList;
-
-    /**
-     * @var        Track
-     */
-    protected $aTrack;
+    protected $aUser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -91,27 +73,6 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     protected $alreadyInClearAllReferencesDeep = false;
 
     /**
-     * Applies default values to this object.
-     * This method should be called from the object's constructor (or
-     * equivalent initialization method).
-     * @see        __construct()
-     */
-    public function applyDefaultValues()
-    {
-        $this->synced = false;
-    }
-
-    /**
-     * Initializes internal state of BasePlayListTrack object.
-     * @see        applyDefaults()
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->applyDefaultValues();
-    }
-
-    /**
      * Get the [id] column value.
      *
      * @return int
@@ -123,54 +84,32 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     }
 
     /**
-     * Get the [synced] column value.
+     * Get the [user_id] column value.
      *
-     * @return boolean
+     * @return int
      */
-    public function getSynced()
+    public function getUserId()
     {
 
-        return $this->synced;
+        return $this->user_id;
     }
 
     /**
-     * Get the [err_msg] column value.
+     * Get the [friend_email] column value.
      *
      * @return string
      */
-    public function getErrMsg()
+    public function getFriendEmail()
     {
 
-        return $this->err_msg;
-    }
-
-    /**
-     * Get the [playlist_id] column value.
-     *
-     * @return int
-     */
-    public function getPlaylistId()
-    {
-
-        return $this->playlist_id;
-    }
-
-    /**
-     * Get the [track_id] column value.
-     *
-     * @return int
-     */
-    public function getTrackId()
-    {
-
-        return $this->track_id;
+        return $this->friend_email;
     }
 
     /**
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return PlayListTrack The current object (for fluent API support)
+     * @return Friend The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -180,7 +119,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[] = PlayListTrackPeer::ID;
+            $this->modifiedColumns[] = FriendPeer::ID;
         }
 
 
@@ -188,104 +127,50 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     } // setId()
 
     /**
-     * Sets the value of the [synced] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * Set the value of [user_id] column.
      *
-     * @param boolean|integer|string $v The new value
-     * @return PlayListTrack The current object (for fluent API support)
+     * @param int $v new value
+     * @return Friend The current object (for fluent API support)
      */
-    public function setSynced($v)
+    public function setUserId($v)
     {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
         }
 
-        if ($this->synced !== $v) {
-            $this->synced = $v;
-            $this->modifiedColumns[] = PlayListTrackPeer::SYNCED;
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[] = FriendPeer::USER_ID;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
         }
 
 
         return $this;
-    } // setSynced()
+    } // setUserId()
 
     /**
-     * Set the value of [err_msg] column.
+     * Set the value of [friend_email] column.
      *
      * @param string $v new value
-     * @return PlayListTrack The current object (for fluent API support)
+     * @return Friend The current object (for fluent API support)
      */
-    public function setErrMsg($v)
+    public function setFriendEmail($v)
     {
         if ($v !== null && is_numeric($v)) {
             $v = (string) $v;
         }
 
-        if ($this->err_msg !== $v) {
-            $this->err_msg = $v;
-            $this->modifiedColumns[] = PlayListTrackPeer::ERR_MSG;
+        if ($this->friend_email !== $v) {
+            $this->friend_email = $v;
+            $this->modifiedColumns[] = FriendPeer::FRIEND_EMAIL;
         }
 
 
         return $this;
-    } // setErrMsg()
-
-    /**
-     * Set the value of [playlist_id] column.
-     *
-     * @param int $v new value
-     * @return PlayListTrack The current object (for fluent API support)
-     */
-    public function setPlaylistId($v)
-    {
-        if ($v !== null && is_numeric($v)) {
-            $v = (int) $v;
-        }
-
-        if ($this->playlist_id !== $v) {
-            $this->playlist_id = $v;
-            $this->modifiedColumns[] = PlayListTrackPeer::PLAYLIST_ID;
-        }
-
-        if ($this->aPlayList !== null && $this->aPlayList->getId() !== $v) {
-            $this->aPlayList = null;
-        }
-
-
-        return $this;
-    } // setPlaylistId()
-
-    /**
-     * Set the value of [track_id] column.
-     *
-     * @param int $v new value
-     * @return PlayListTrack The current object (for fluent API support)
-     */
-    public function setTrackId($v)
-    {
-        if ($v !== null && is_numeric($v)) {
-            $v = (int) $v;
-        }
-
-        if ($this->track_id !== $v) {
-            $this->track_id = $v;
-            $this->modifiedColumns[] = PlayListTrackPeer::TRACK_ID;
-        }
-
-        if ($this->aTrack !== null && $this->aTrack->getId() !== $v) {
-            $this->aTrack = null;
-        }
-
-
-        return $this;
-    } // setTrackId()
+    } // setFriendEmail()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -297,10 +182,6 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->synced !== false) {
-                return false;
-            }
-
         // otherwise, everything was equal, so return true
         return true;
     } // hasOnlyDefaultValues()
@@ -324,10 +205,8 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
         try {
 
             $this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
-            $this->synced = ($row[$startcol + 1] !== null) ? (boolean) $row[$startcol + 1] : null;
-            $this->err_msg = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
-            $this->playlist_id = ($row[$startcol + 3] !== null) ? (int) $row[$startcol + 3] : null;
-            $this->track_id = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
+            $this->user_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
+            $this->friend_email = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -337,10 +216,10 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 5; // 5 = PlayListTrackPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = FriendPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException("Error populating PlayListTrack object", $e);
+            throw new PropelException("Error populating Friend object", $e);
         }
     }
 
@@ -360,11 +239,8 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     public function ensureConsistency()
     {
 
-        if ($this->aPlayList !== null && $this->playlist_id !== $this->aPlayList->getId()) {
-            $this->aPlayList = null;
-        }
-        if ($this->aTrack !== null && $this->track_id !== $this->aTrack->getId()) {
-            $this->aTrack = null;
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
     } // ensureConsistency
 
@@ -389,13 +265,13 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
         }
 
         if ($con === null) {
-            $con = Propel::getConnection(PlayListTrackPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+            $con = Propel::getConnection(FriendPeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $stmt = PlayListTrackPeer::doSelectStmt($this->buildPkeyCriteria(), $con);
+        $stmt = FriendPeer::doSelectStmt($this->buildPkeyCriteria(), $con);
         $row = $stmt->fetch(PDO::FETCH_NUM);
         $stmt->closeCursor();
         if (!$row) {
@@ -405,8 +281,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aPlayList = null;
-            $this->aTrack = null;
+            $this->aUser = null;
         } // if (deep)
     }
 
@@ -427,12 +302,12 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
         }
 
         if ($con === null) {
-            $con = Propel::getConnection(PlayListTrackPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
+            $con = Propel::getConnection(FriendPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
         }
 
         $con->beginTransaction();
         try {
-            $deleteQuery = PlayListTrackQuery::create()
+            $deleteQuery = FriendQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -470,7 +345,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
         }
 
         if ($con === null) {
-            $con = Propel::getConnection(PlayListTrackPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
+            $con = Propel::getConnection(FriendPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
         }
 
         $con->beginTransaction();
@@ -490,7 +365,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                PlayListTrackPeer::addInstanceToPool($this);
+                FriendPeer::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -525,18 +400,11 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aPlayList !== null) {
-                if ($this->aPlayList->isModified() || $this->aPlayList->isNew()) {
-                    $affectedRows += $this->aPlayList->save($con);
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
                 }
-                $this->setPlayList($this->aPlayList);
-            }
-
-            if ($this->aTrack !== null) {
-                if ($this->aTrack->isModified() || $this->aTrack->isNew()) {
-                    $affectedRows += $this->aTrack->save($con);
-                }
-                $this->setTrack($this->aTrack);
+                $this->setUser($this->aUser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -570,30 +438,24 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[] = PlayListTrackPeer::ID;
+        $this->modifiedColumns[] = FriendPeer::ID;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . PlayListTrackPeer::ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . FriendPeer::ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(PlayListTrackPeer::ID)) {
+        if ($this->isColumnModified(FriendPeer::ID)) {
             $modifiedColumns[':p' . $index++]  = '`id`';
         }
-        if ($this->isColumnModified(PlayListTrackPeer::SYNCED)) {
-            $modifiedColumns[':p' . $index++]  = '`synced`';
+        if ($this->isColumnModified(FriendPeer::USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = '`user_id`';
         }
-        if ($this->isColumnModified(PlayListTrackPeer::ERR_MSG)) {
-            $modifiedColumns[':p' . $index++]  = '`err_msg`';
-        }
-        if ($this->isColumnModified(PlayListTrackPeer::PLAYLIST_ID)) {
-            $modifiedColumns[':p' . $index++]  = '`playlist_id`';
-        }
-        if ($this->isColumnModified(PlayListTrackPeer::TRACK_ID)) {
-            $modifiedColumns[':p' . $index++]  = '`track_id`';
+        if ($this->isColumnModified(FriendPeer::FRIEND_EMAIL)) {
+            $modifiedColumns[':p' . $index++]  = '`friend_email`';
         }
 
         $sql = sprintf(
-            'INSERT INTO `playlisttrack` (%s) VALUES (%s)',
+            'INSERT INTO `friend` (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -605,17 +467,11 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
                     case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`synced`':
-                        $stmt->bindValue($identifier, (int) $this->synced, PDO::PARAM_INT);
+                    case '`user_id`':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
-                    case '`err_msg`':
-                        $stmt->bindValue($identifier, $this->err_msg, PDO::PARAM_STR);
-                        break;
-                    case '`playlist_id`':
-                        $stmt->bindValue($identifier, $this->playlist_id, PDO::PARAM_INT);
-                        break;
-                    case '`track_id`':
-                        $stmt->bindValue($identifier, $this->track_id, PDO::PARAM_INT);
+                    case '`friend_email`':
+                        $stmt->bindValue($identifier, $this->friend_email, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -716,20 +572,14 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aPlayList !== null) {
-                if (!$this->aPlayList->validate($columns)) {
-                    $failureMap = array_merge($failureMap, $this->aPlayList->getValidationFailures());
-                }
-            }
-
-            if ($this->aTrack !== null) {
-                if (!$this->aTrack->validate($columns)) {
-                    $failureMap = array_merge($failureMap, $this->aTrack->getValidationFailures());
+            if ($this->aUser !== null) {
+                if (!$this->aUser->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aUser->getValidationFailures());
                 }
             }
 
 
-            if (($retval = PlayListTrackPeer::doValidate($this, $columns)) !== true) {
+            if (($retval = FriendPeer::doValidate($this, $columns)) !== true) {
                 $failureMap = array_merge($failureMap, $retval);
             }
 
@@ -753,7 +603,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function getByName($name, $type = BasePeer::TYPE_PHPNAME)
     {
-        $pos = PlayListTrackPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
+        $pos = FriendPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -773,16 +623,10 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
                 return $this->getId();
                 break;
             case 1:
-                return $this->getSynced();
+                return $this->getUserId();
                 break;
             case 2:
-                return $this->getErrMsg();
-                break;
-            case 3:
-                return $this->getPlaylistId();
-                break;
-            case 4:
-                return $this->getTrackId();
+                return $this->getFriendEmail();
                 break;
             default:
                 return null;
@@ -807,24 +651,19 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['PlayListTrack'][$this->getPrimaryKey()])) {
+        if (isset($alreadyDumpedObjects['Friend'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['PlayListTrack'][$this->getPrimaryKey()] = true;
-        $keys = PlayListTrackPeer::getFieldNames($keyType);
+        $alreadyDumpedObjects['Friend'][$this->getPrimaryKey()] = true;
+        $keys = FriendPeer::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getSynced(),
-            $keys[2] => $this->getErrMsg(),
-            $keys[3] => $this->getPlaylistId(),
-            $keys[4] => $this->getTrackId(),
+            $keys[1] => $this->getUserId(),
+            $keys[2] => $this->getFriendEmail(),
         );
         if ($includeForeignObjects) {
-            if (null !== $this->aPlayList) {
-                $result['PlayList'] = $this->aPlayList->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aTrack) {
-                $result['Track'] = $this->aTrack->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aUser) {
+                $result['User'] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -844,7 +683,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function setByName($name, $value, $type = BasePeer::TYPE_PHPNAME)
     {
-        $pos = PlayListTrackPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
+        $pos = FriendPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
 
         $this->setByPosition($pos, $value);
     }
@@ -864,16 +703,10 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
                 $this->setId($value);
                 break;
             case 1:
-                $this->setSynced($value);
+                $this->setUserId($value);
                 break;
             case 2:
-                $this->setErrMsg($value);
-                break;
-            case 3:
-                $this->setPlaylistId($value);
-                break;
-            case 4:
-                $this->setTrackId($value);
+                $this->setFriendEmail($value);
                 break;
         } // switch()
     }
@@ -897,13 +730,11 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function fromArray($arr, $keyType = BasePeer::TYPE_PHPNAME)
     {
-        $keys = PlayListTrackPeer::getFieldNames($keyType);
+        $keys = FriendPeer::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-        if (array_key_exists($keys[1], $arr)) $this->setSynced($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setErrMsg($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setPlaylistId($arr[$keys[3]]);
-        if (array_key_exists($keys[4], $arr)) $this->setTrackId($arr[$keys[4]]);
+        if (array_key_exists($keys[1], $arr)) $this->setUserId($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setFriendEmail($arr[$keys[2]]);
     }
 
     /**
@@ -913,13 +744,11 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(PlayListTrackPeer::DATABASE_NAME);
+        $criteria = new Criteria(FriendPeer::DATABASE_NAME);
 
-        if ($this->isColumnModified(PlayListTrackPeer::ID)) $criteria->add(PlayListTrackPeer::ID, $this->id);
-        if ($this->isColumnModified(PlayListTrackPeer::SYNCED)) $criteria->add(PlayListTrackPeer::SYNCED, $this->synced);
-        if ($this->isColumnModified(PlayListTrackPeer::ERR_MSG)) $criteria->add(PlayListTrackPeer::ERR_MSG, $this->err_msg);
-        if ($this->isColumnModified(PlayListTrackPeer::PLAYLIST_ID)) $criteria->add(PlayListTrackPeer::PLAYLIST_ID, $this->playlist_id);
-        if ($this->isColumnModified(PlayListTrackPeer::TRACK_ID)) $criteria->add(PlayListTrackPeer::TRACK_ID, $this->track_id);
+        if ($this->isColumnModified(FriendPeer::ID)) $criteria->add(FriendPeer::ID, $this->id);
+        if ($this->isColumnModified(FriendPeer::USER_ID)) $criteria->add(FriendPeer::USER_ID, $this->user_id);
+        if ($this->isColumnModified(FriendPeer::FRIEND_EMAIL)) $criteria->add(FriendPeer::FRIEND_EMAIL, $this->friend_email);
 
         return $criteria;
     }
@@ -934,8 +763,8 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(PlayListTrackPeer::DATABASE_NAME);
-        $criteria->add(PlayListTrackPeer::ID, $this->id);
+        $criteria = new Criteria(FriendPeer::DATABASE_NAME);
+        $criteria->add(FriendPeer::ID, $this->id);
 
         return $criteria;
     }
@@ -976,17 +805,15 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param object $copyObj An object of PlayListTrack (or compatible) type.
+     * @param object $copyObj An object of Friend (or compatible) type.
      * @param boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setSynced($this->getSynced());
-        $copyObj->setErrMsg($this->getErrMsg());
-        $copyObj->setPlaylistId($this->getPlaylistId());
-        $copyObj->setTrackId($this->getTrackId());
+        $copyObj->setUserId($this->getUserId());
+        $copyObj->setFriendEmail($this->getFriendEmail());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1014,7 +841,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      * objects.
      *
      * @param boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return PlayListTrack Clone of current object.
+     * @return Friend Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1034,38 +861,38 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      * same instance for all member of this class. The method could therefore
      * be static, but this would prevent one from overriding the behavior.
      *
-     * @return PlayListTrackPeer
+     * @return FriendPeer
      */
     public function getPeer()
     {
         if (self::$peer === null) {
-            self::$peer = new PlayListTrackPeer();
+            self::$peer = new FriendPeer();
         }
 
         return self::$peer;
     }
 
     /**
-     * Declares an association between this object and a PlayList object.
+     * Declares an association between this object and a User object.
      *
-     * @param   PlayList $v
-     * @return PlayListTrack The current object (for fluent API support)
+     * @param   User $v
+     * @return Friend The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setPlayList(PlayList $v = null)
+    public function setUser(User $v = null)
     {
         if ($v === null) {
-            $this->setPlaylistId(NULL);
+            $this->setUserId(NULL);
         } else {
-            $this->setPlaylistId($v->getId());
+            $this->setUserId($v->getId());
         }
 
-        $this->aPlayList = $v;
+        $this->aUser = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the PlayList object, it will not be re-added.
+        // If this object has already been added to the User object, it will not be re-added.
         if ($v !== null) {
-            $v->addPlayListTrack($this);
+            $v->addFriend($this);
         }
 
 
@@ -1074,79 +901,29 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
 
 
     /**
-     * Get the associated PlayList object
+     * Get the associated User object
      *
      * @param PropelPDO $con Optional Connection object.
      * @param $doQuery Executes a query to get the object if required
-     * @return PlayList The associated PlayList object.
+     * @return User The associated User object.
      * @throws PropelException
      */
-    public function getPlayList(PropelPDO $con = null, $doQuery = true)
+    public function getUser(PropelPDO $con = null, $doQuery = true)
     {
-        if ($this->aPlayList === null && ($this->playlist_id !== null) && $doQuery) {
-            $this->aPlayList = PlayListQuery::create()->findPk($this->playlist_id, $con);
+        if ($this->aUser === null && ($this->user_id !== null) && $doQuery) {
+            $this->aUser = UserQuery::create()
+                ->filterByFriend($this) // here
+                ->findOne($con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aPlayList->addPlayListTracks($this);
+                $this->aUser->addFriends($this);
              */
         }
 
-        return $this->aPlayList;
-    }
-
-    /**
-     * Declares an association between this object and a Track object.
-     *
-     * @param   Track $v
-     * @return PlayListTrack The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setTrack(Track $v = null)
-    {
-        if ($v === null) {
-            $this->setTrackId(NULL);
-        } else {
-            $this->setTrackId($v->getId());
-        }
-
-        $this->aTrack = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the Track object, it will not be re-added.
-        if ($v !== null) {
-            $v->addPlayListTrack($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated Track object
-     *
-     * @param PropelPDO $con Optional Connection object.
-     * @param $doQuery Executes a query to get the object if required
-     * @return Track The associated Track object.
-     * @throws PropelException
-     */
-    public function getTrack(PropelPDO $con = null, $doQuery = true)
-    {
-        if ($this->aTrack === null && ($this->track_id !== null) && $doQuery) {
-            $this->aTrack = TrackQuery::create()->findPk($this->track_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aTrack->addPlayListTracks($this);
-             */
-        }
-
-        return $this->aTrack;
+        return $this->aUser;
     }
 
     /**
@@ -1155,15 +932,12 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     public function clear()
     {
         $this->id = null;
-        $this->synced = null;
-        $this->err_msg = null;
-        $this->playlist_id = null;
-        $this->track_id = null;
+        $this->user_id = null;
+        $this->friend_email = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
         $this->clearAllReferences();
-        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1182,18 +956,14 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
-            if ($this->aPlayList instanceof Persistent) {
-              $this->aPlayList->clearAllReferences($deep);
-            }
-            if ($this->aTrack instanceof Persistent) {
-              $this->aTrack->clearAllReferences($deep);
+            if ($this->aUser instanceof Persistent) {
+              $this->aUser->clearAllReferences($deep);
             }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
-        $this->aPlayList = null;
-        $this->aTrack = null;
+        $this->aUser = null;
     }
 
     /**
@@ -1203,7 +973,7 @@ abstract class BasePlayListTrack extends BaseObject implements Persistent
      */
     public function __toString()
     {
-        return (string) $this->exportTo(PlayListTrackPeer::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(FriendPeer::DEFAULT_STRING_FORMAT);
     }
 
     /**

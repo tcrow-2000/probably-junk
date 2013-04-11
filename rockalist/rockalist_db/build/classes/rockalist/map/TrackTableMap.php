@@ -47,6 +47,9 @@ class TrackTableMap extends TableMap
         $this->addForeignKey('artist_id', 'ArtistId', 'INTEGER', 'artist', 'id', true, null, null);
         $this->addForeignKey('album_id', 'AlbumId', 'INTEGER', 'album', 'id', false, null, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
+        $this->addColumn('rating_total', 'RatingTotal', 'INTEGER', false, null, null);
+        $this->addColumn('rating_count', 'RatingCount', 'INTEGER', false, null, null);
+        $this->addColumn('rating_average', 'RatingAverage', 'INTEGER', false, null, null);
         // validators
     } // initialize()
 

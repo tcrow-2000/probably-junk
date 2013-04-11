@@ -24,19 +24,22 @@ abstract class BasePlayListTrackPeer
     const TM_CLASS = 'PlayListTrackTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 5;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /** the column name for the id field */
     const ID = 'playlisttrack.id';
 
     /** the column name for the synced field */
     const SYNCED = 'playlisttrack.synced';
+
+    /** the column name for the err_msg field */
+    const ERR_MSG = 'playlisttrack.err_msg';
 
     /** the column name for the playlist_id field */
     const PLAYLIST_ID = 'playlisttrack.playlist_id';
@@ -63,12 +66,12 @@ abstract class BasePlayListTrackPeer
      * e.g. PlayListTrackPeer::$fieldNames[PlayListTrackPeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'Synced', 'PlaylistId', 'TrackId', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'synced', 'playlistId', 'trackId', ),
-        BasePeer::TYPE_COLNAME => array (PlayListTrackPeer::ID, PlayListTrackPeer::SYNCED, PlayListTrackPeer::PLAYLIST_ID, PlayListTrackPeer::TRACK_ID, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'SYNCED', 'PLAYLIST_ID', 'TRACK_ID', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'synced', 'playlist_id', 'track_id', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'Synced', 'ErrMsg', 'PlaylistId', 'TrackId', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'synced', 'errMsg', 'playlistId', 'trackId', ),
+        BasePeer::TYPE_COLNAME => array (PlayListTrackPeer::ID, PlayListTrackPeer::SYNCED, PlayListTrackPeer::ERR_MSG, PlayListTrackPeer::PLAYLIST_ID, PlayListTrackPeer::TRACK_ID, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'SYNCED', 'ERR_MSG', 'PLAYLIST_ID', 'TRACK_ID', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'synced', 'err_msg', 'playlist_id', 'track_id', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
     );
 
     /**
@@ -78,12 +81,12 @@ abstract class BasePlayListTrackPeer
      * e.g. PlayListTrackPeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Synced' => 1, 'PlaylistId' => 2, 'TrackId' => 3, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'synced' => 1, 'playlistId' => 2, 'trackId' => 3, ),
-        BasePeer::TYPE_COLNAME => array (PlayListTrackPeer::ID => 0, PlayListTrackPeer::SYNCED => 1, PlayListTrackPeer::PLAYLIST_ID => 2, PlayListTrackPeer::TRACK_ID => 3, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'SYNCED' => 1, 'PLAYLIST_ID' => 2, 'TRACK_ID' => 3, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'synced' => 1, 'playlist_id' => 2, 'track_id' => 3, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Synced' => 1, 'ErrMsg' => 2, 'PlaylistId' => 3, 'TrackId' => 4, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'synced' => 1, 'errMsg' => 2, 'playlistId' => 3, 'trackId' => 4, ),
+        BasePeer::TYPE_COLNAME => array (PlayListTrackPeer::ID => 0, PlayListTrackPeer::SYNCED => 1, PlayListTrackPeer::ERR_MSG => 2, PlayListTrackPeer::PLAYLIST_ID => 3, PlayListTrackPeer::TRACK_ID => 4, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'SYNCED' => 1, 'ERR_MSG' => 2, 'PLAYLIST_ID' => 3, 'TRACK_ID' => 4, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'synced' => 1, 'err_msg' => 2, 'playlist_id' => 3, 'track_id' => 4, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
     );
 
     /**
@@ -159,11 +162,13 @@ abstract class BasePlayListTrackPeer
         if (null === $alias) {
             $criteria->addSelectColumn(PlayListTrackPeer::ID);
             $criteria->addSelectColumn(PlayListTrackPeer::SYNCED);
+            $criteria->addSelectColumn(PlayListTrackPeer::ERR_MSG);
             $criteria->addSelectColumn(PlayListTrackPeer::PLAYLIST_ID);
             $criteria->addSelectColumn(PlayListTrackPeer::TRACK_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.synced');
+            $criteria->addSelectColumn($alias . '.err_msg');
             $criteria->addSelectColumn($alias . '.playlist_id');
             $criteria->addSelectColumn($alias . '.track_id');
         }

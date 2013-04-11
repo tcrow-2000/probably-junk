@@ -8,11 +8,13 @@
  *
  * @method PlayListTrackQuery orderById($order = Criteria::ASC) Order by the id column
  * @method PlayListTrackQuery orderBySynced($order = Criteria::ASC) Order by the synced column
+ * @method PlayListTrackQuery orderByErrMsg($order = Criteria::ASC) Order by the err_msg column
  * @method PlayListTrackQuery orderByPlaylistId($order = Criteria::ASC) Order by the playlist_id column
  * @method PlayListTrackQuery orderByTrackId($order = Criteria::ASC) Order by the track_id column
  *
  * @method PlayListTrackQuery groupById() Group by the id column
  * @method PlayListTrackQuery groupBySynced() Group by the synced column
+ * @method PlayListTrackQuery groupByErrMsg() Group by the err_msg column
  * @method PlayListTrackQuery groupByPlaylistId() Group by the playlist_id column
  * @method PlayListTrackQuery groupByTrackId() Group by the track_id column
  *
@@ -32,11 +34,13 @@
  * @method PlayListTrack findOneOrCreate(PropelPDO $con = null) Return the first PlayListTrack matching the query, or a new PlayListTrack object populated from the query conditions when no match is found
  *
  * @method PlayListTrack findOneBySynced(boolean $synced) Return the first PlayListTrack filtered by the synced column
+ * @method PlayListTrack findOneByErrMsg(string $err_msg) Return the first PlayListTrack filtered by the err_msg column
  * @method PlayListTrack findOneByPlaylistId(int $playlist_id) Return the first PlayListTrack filtered by the playlist_id column
  * @method PlayListTrack findOneByTrackId(int $track_id) Return the first PlayListTrack filtered by the track_id column
  *
  * @method array findById(int $id) Return PlayListTrack objects filtered by the id column
  * @method array findBySynced(boolean $synced) Return PlayListTrack objects filtered by the synced column
+ * @method array findByErrMsg(string $err_msg) Return PlayListTrack objects filtered by the err_msg column
  * @method array findByPlaylistId(int $playlist_id) Return PlayListTrack objects filtered by the playlist_id column
  * @method array findByTrackId(int $track_id) Return PlayListTrack objects filtered by the track_id column
  *
@@ -142,7 +146,7 @@ abstract class BasePlayListTrackQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `synced`, `playlist_id`, `track_id` FROM `playlisttrack` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `synced`, `err_msg`, `playlist_id`, `track_id` FROM `playlisttrack` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -298,6 +302,35 @@ abstract class BasePlayListTrackQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(PlayListTrackPeer::SYNCED, $synced, $comparison);
+    }
+
+    /**
+     * Filter the query on the err_msg column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByErrMsg('fooValue');   // WHERE err_msg = 'fooValue'
+     * $query->filterByErrMsg('%fooValue%'); // WHERE err_msg LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $errMsg The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return PlayListTrackQuery The current query, for fluid interface
+     */
+    public function filterByErrMsg($errMsg = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($errMsg)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $errMsg)) {
+                $errMsg = str_replace('*', '%', $errMsg);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(PlayListTrackPeer::ERR_MSG, $errMsg, $comparison);
     }
 
     /**
