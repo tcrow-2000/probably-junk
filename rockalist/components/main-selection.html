@@ -5,14 +5,19 @@
     <title>Main Selection</title>
     
     <style type="text/css">
-        
-    #background {
+    body {
+        background-color: gray;
+        color: #242400;
+        font-family: "Trebuchet MS";
+    }
+    #tuner {
         background-color: #252020;
-        height: 210px;
-        width: 700px;
+        height: 185px;
+        width: 960px;
         padding-top: 5px;
         border-radius: 5px;
         background: url('../public/img/navy_blue.png') repeat;
+        margin-bottom: 10px;
     }
     .rivets {
         width: 100%;
@@ -40,11 +45,11 @@
     .selection {
         float: left;
         width:147px;
-        height: 80px;
-        line-height: 80px;
+        height: 60px;
+        line-height: 60px;
         font-size: 35px;
         text-align: center;
-        font-family: "Trebuchet MS";
+        color: #242400;
         cursor: pointer;
         border-right: 1px solid #444;
     }
@@ -52,7 +57,7 @@
         border-right: none;
     }
     #selection-box {
-        height: 76px;
+        height: 56px;
         width: 146px;
         border: 2px solid grey;
         border-bottom: 2px solid red;
@@ -73,14 +78,15 @@
         border-right: 10px solid transparent;
         border-bottom: 20px solid red;
         margin: 0 auto;
-        margin-top: 58px;
+        margin-top: 38px;
     }
     #selection-container {
         border: 2px solid #191919;
         margin: 0 auto;
-        height: 80px;
-        width: 600px;
+        height: 60px;
+        width: 890px;
         position: relative;
+        overflow: hidden;
         -moz-box-shadow:0px 0px 10px 5px #444  inset;
         -webkit-box-shadow:0px 0px 10px 5px #444  inset;
         box-shadow:0px 0px 10px 5px #444  inset;
@@ -132,10 +138,158 @@
             background: linear-gradient(to bottom,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.65) 1%,rgba(0,0,0,0) 61%,rgba(0,0,0,0) 100%); /* W3C */
             filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
     }
+    
+    #screen {
+        background-color: #252020;
+        height: 510px;
+        width: 960px;
+        padding-top: 5px;
+        border-radius: 5px;
+        background: url('../public/img/navy_blue.png') repeat;
+    }
+    #inner-screen {
+        height: 440px;
+        width: 890px;
+        margin: 0 auto;
+        border: 2px solid #191919; 
+        -moz-box-shadow:0px 0px 10px 5px #444  inset;
+        -webkit-box-shadow:0px 0px 10px 5px #444  inset;
+        box-shadow:0px 0px 10px 5px #444  inset;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#444444')";
+        filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#444444');    
+        
+        background: rgb(229,230,150); /* Old browsers */
+        background: -moz-linear-gradient(top,  rgba(229,230,150,1) 42%, rgba(238,242,159,1) 70%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(42%,rgba(229,230,150,1)), color-stop(70%,rgba(238,242,159,1))); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* IE10+ */
+        background: linear-gradient(to bottom,  rgba(229,230,150,1) 42%,rgba(238,242,159,1) 70%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e696', endColorstr='#eef29f',GradientType=0 ); /* IE6-9 */
+    }
+    .subscreen {
+        height: 420px;
+        width: 870px;
+        margin: 10px auto;
+    }
+    .subscreen .inner {
+        width: 413px;
+        height: 348px;
+        margin: 10px;
+        padding: 1px;
+    }
+    .screen-header {
+        height: 49px;
+        width: 100%;
+        border-bottom: 1px solid #242400;
+    }
+    .screen-header .title {
+        height: 50px;
+        width: auto;
+        line-height: 50px;
+        font-size: 35px;
+        margin-left: 10px;
+        float: left;
+    }
+    .selectable-action {
+        height: 30px;
+        width: auto;
+        margin: 10px 10px;
+        line-height: 30px;
+        font-size: 18px;
+        padding: 0px 5px;
+        float: right;
+        cursor: pointer;
+        border-radius: 5px;
+        border: 1px solid #242400;
+    }
+    .selectable-action.selected {
+        background-color: #242400;
+        color: rgb(229,230,150);
+    }
+    .screen-menu {
+        height: 370px;
+        width: 434px;
+        float: left;
+        border-right: 1px solid #242400;
+    }
+    .screen-action {
+        height: 370px;
+        width: 435px;
+        float: right;
+    }
+    .action-subscreen {
+        display: none;
+    }
+    #screen-cache {
+        display: none;
+    }
+    .field-set {
+        height: auto;
+        width: 340px;
+        margin: 20px auto;
+    }
+    .field {
+        height: 40px;
+        width: 340px;
+        margin: 20px 0px;
+    }
+    input {
+        border: none;
+        outline: none;
+        width: 340px;
+        border-bottom: 2px solid #242400;
+        margin-bottom: 0;
+        color: gray;
+        font-size: 20px;
+    }
+    .input-label {
+        float: right;
+        color: #242400;
+        font-weight: bold;
+    }
+    .validation-message {
+        color: #FF3333;
+        display:none;
+        font-size: 12px;
+    }
+    .arrow-down {
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent; 
+        border-top: 10px solid #242400;
+        float: right;
+    }
+    #client-select {
+        width: 340px;
+        height: auto;
+        margin: 0 auto;
+    }
+    .client-selection {
+        height: 19px;
+        width: 19px;
+        border: 1px solid #242400;
+        margin: 5px 46px;
+        float: left;
+        cursor: pointer;
+    }
+    .client-selection .selection-inner {
+        height: 17px;
+        width: 17px;
+        margin: 1px;
+    }
+    .client-selection .selection-inner.selected {
+        background-color: #242400;
+    }
+    #client-img {
+        width: 340px;
+
+    }
     </style>
 </head>
 <body>
-    <div id="background">
+    <div id="tuner">
         <div class="rivets">
             <div class="rivet"></div>
             <div class="rivet"></div>
@@ -143,9 +297,12 @@
         <div id="selection-container">
             <div id="selection-box"><div id="selection-arrow"></div></div>
             <div class="selection">Log In</div>
+            <div class="selection">About</div>
+            <div class="selection">FAQ</div>
             <div class="selection">Playlist</div>
             <div class="selection">Friends</div>
             <div class="selection">Settings</div>
+            <div class="selection">Log Out</div>
         </div>
         <div id="light-button-container">
             <div class="light-button" data-audio="../public/audio/moon.mp3">
@@ -153,22 +310,22 @@
                     <div class="light-button-bezel"></div>
                 </div>
             </div>
-            <div class="light-button" data-audio="../public/audio/moon.mp3">
+            <div class="light-button" data-audio="../public/audio/kiaHoraTeMarino.mp3">
                 <div class="light-button-backlight" data-off="#B8B800" data-on="#FFFF00">
                     <div class="light-button-bezel"></div>
                 </div>
             </div>
-            <div class="light-button" data-audio="../public/audio/moon.mp3">
+            <div class="light-button" data-audio="../public/audio/greatestSpeechInTheWorld.mp3">
                 <div class="light-button-backlight" data-off="#990000" data-on="#FF0000">
                     <div class="light-button-bezel"></div>
                 </div>
             </div>
-            <div class="light-button">
+            <div id="test" class="light-button">
                 <div class="light-button-backlight" data-off="#000080" data-on="#4DB8FF">
                     <div class="light-button-bezel"></div>
                 </div>
             </div>
-            <div class="light-button">
+            <div id="test2" class="light-button">
                 <div class="light-button-backlight" data-off="#993D00" data-on="#FFAD33">
                     <div class="light-button-bezel"></div>
                 </div>
@@ -179,6 +336,21 @@
             <div class="rivet"></div>
         </div>
     </div>
+    
+    <div id="screen">
+        <div class="rivets">
+            <div class="rivet"></div>
+            <div class="rivet"></div>
+        </div>
+        <div id="inner-screen">
+            <!-- dynamic -->
+        </div>
+        <div class="rivets">
+            <div class="rivet"></div>
+            <div class="rivet"></div>
+        </div>
+    </div>
+    
     <audio id="radio" style="display: none;"></audio>
     <audio id="special-audio" style="display: none;"></audio>
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -222,7 +394,89 @@
                 console.log(specialAudio.src);
                 specialAudio.play();
             });
+            
+            $('#test').click(function() {
+                $('#selection-container').find('>:nth-child(2)').hide(200);
+            });
+            $('#test2').click(function() {
+                $('#selection-container').find('>:nth-child(2)').show(200);
+            });
+            $('.selectable-action').click(function() {
+               $(this).siblings().each(function() {
+                  $(this).removeClass('selected');
+                  $('#' + $(this).data('action')).hide();
+               });
+               $(this).addClass('selected');
+               $('#' + $(this).data('action')).show();
+            });
+            $('#screen-login').appendTo($('#inner-screen'));
+            $("[data-action='show-login']").click();
+            
+            $('.client-selection').click(function() {
+                $('.client-selection .selected').removeClass('selected');
+                $(this).find('.selection-inner').addClass('selected');
+            });
         });
     </script>
+    
+    <div id="screen-cache">
+        <div id="screen-login" class="subscreen">
+            <div class="screen-header">
+                <div class="title">Hello.</div>
+                <div class="selectable-action" data-action="show-register">Register</div>
+                <div class="selectable-action" data-action="show-login">Log In</div>
+            </div>
+            <div class="screen-menu">
+                <div class="inner">
+                    
+                </div>
+            </div>
+            <div class="screen-action">
+                <div class="inner"> 
+                    <div id="show-login" class="action-subscreen">
+                        <div class="field-set">
+                            <div class="field" data-type="email">
+                                <input type="text" id="user" />
+                                <div class="arrow-down"></div>
+                                <div class="input-label">Email</div>
+                                <div class="validation-message">* Valid email required</div>
+                            </div>
+                            <div class="field" data-type="password">
+                                <input type="password" id="password" />
+                                <div class="arrow-down"></div>
+                                <div class="input-label">Password</div>
+                                <div class="validation-message">* Non empty password required</div>
+                            </div>
+                        </div>
+                        <div class="selectable-action">Let me in</div>
+                    </div>
+                    <div id="show-register" class="action-subscreen">
+                        <div class="field-set">
+                            <div class="field" data-type="email">
+                                <input type="text" id="new-user" />
+                                <div class="arrow-down"></div>
+                                <div class="input-label">User email</div>
+                                <div class="validation-message">* Valid email required</div>
+                            </div>
+                            <div class="field" data-type="password">
+                                <input type="password" id="new-password" />
+                                <div class="arrow-down"></div>
+                                <div class="input-label">Password (6-10 chars)</div>
+                                <div class="validation-message">* Non empty password required</div>
+                            </div>
+                        </div>
+                        <div id="client-select">Please select your OS
+                            <img id="client-img" src="../public/img/windowsmaclinux-yellow.png" />
+                            <div id="client-win" class="client-selection"><div class="selection-inner selected"></div></div>
+                            <div id="client-mac" class="client-selection"><div class="selection-inner"></div></div>
+                            <div id="client-lin" class="client-selection"><div class="selection-inner"></div></div>
+                        </div>
+                        <div class="selectable-action">Register me already!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
