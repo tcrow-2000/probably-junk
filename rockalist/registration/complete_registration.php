@@ -33,7 +33,7 @@
     
     session_start();
     $_SESSION['user'] = $user->getEmail();
-    header('Location: ../go.php');
+    header('Location: ../radio.php');
     exit;
     
 ?>
